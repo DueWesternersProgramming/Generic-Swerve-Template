@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
@@ -25,16 +26,14 @@ public class VisionSubsystem extends SubsystemBase{
     static Transform3d robotToCam;
     static PhotonPoseEstimator photonPoseEstimator;
     
-    public VisionSubsystem(){
+    public VisionSubsystem(String createCameraName, Translation3d cameraPosition, Rotation3d cameraRotation){
         if (SubsystemEnabledConstants.VISION_SUBSYSTEM_ENABLED){
-            camera = new PhotonCamera("photonvision");
+            camera = new PhotonCamera(createCameraName);
+
             aprilTagFieldLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
-            robotToCam = new Transform3d(
-                new Translation3d(
-                    Units.inchesToMeters(-30), // forward+
-                    0., // left+
-                    0.5), // up+
-                new Rotation3d(0,Units.degreesToRadians(26), Units.degreesToRadians(180))); //Cam mounted facing forward, half a meter forward of center, half a meter up from center.
+
+            robotToCam = new Transform3d(cameraPosition,cameraRotation);
+
             photonPoseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout, PoseStrategy.LOWEST_AMBIGUITY, camera, robotToCam);
         }
     }
@@ -90,7 +89,7 @@ public class VisionSubsystem extends SubsystemBase{
         }
     }
     
-    public static Optional<EstimatedRobotPose> getEstimatedGlobalPose(Pose2d prevEstimatedRobotPose) {
+    public Optional<EstimatedRobotPose> getEstimatedGlobalPose(Pose2d prevEstimatedRobotPose) {
         if (SubsystemEnabledConstants.VISION_SUBSYSTEM_ENABLED){
             photonPoseEstimator.setReferencePose(prevEstimatedRobotPose);
             return photonPoseEstimator.update();

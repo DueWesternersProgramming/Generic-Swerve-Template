@@ -8,12 +8,13 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import com.kauailabs.navx.frc.AHRS;
-//import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -45,17 +46,22 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 public class DriveSubsystem extends SubsystemBase {
     private SwerveModule m_frontLeft, m_frontRight, m_rearLeft, m_rearRight;
 
+    //Create as many camera instances as cameras you have
+    public final VisionSubsystem frontRightCamera = new VisionSubsystem("backLeftCam", new Translation3d(), new Rotation3d());
+    public final VisionSubsystem frontLeftCamera = new VisionSubsystem("frontLeftCam", new Translation3d(), new Rotation3d());
+
     private AHRS m_gyro;
 
     private double m_currentRotation = 0.0;
     private double m_currentTranslationDir = 0.0;
     private double m_currentTranslationMag = 0.0;
-    public static double autoAimSpeed;
+
     private SlewRateLimiter m_magLimiter = new SlewRateLimiter(DrivetrainConstants.MAGNITUDE_SLEW_RATE);
     private SlewRateLimiter m_rotLimiter = new SlewRateLimiter(DrivetrainConstants.ROTATIONAL_SLEW_RATE);
     private double m_prevTime = WPIUtilJNI.now() * 1e-6;
 
     private SwerveDrivePoseEstimator m_odometry;
+
 
     Field2d field = new Field2d();
 
@@ -110,13 +116,6 @@ public class DriveSubsystem extends SubsystemBase {
             m_rearLeft.calibrateVirtualPosition(DrivetrainConstants.REAR_LEFT_VIRTUAL_OFFSET_RADIANS);
             m_rearRight.calibrateVirtualPosition(DrivetrainConstants.REAR_RIGHT_VIRTUAL_OFFSET_RADIANS);
 
-            // calculateHeading();
-            // zeroHeading();
-
-            // m_gyro.setAngleAdjustment(0);
-            // Pose2d initialPose = new Pose2d(initialTranslation, initialRotation);
-            // resetOdometry(initialPose);
-
             AutoBuilder.configureHolonomic(
                     m_odometry::getEstimatedPosition, // Robot pose supplier
                     this::resetOdometry, // Method to reset odometry (will be called if your auto has a starting pose)
@@ -162,14 +161,6 @@ public class DriveSubsystem extends SubsystemBase {
         return m_gyro.getRotation2d().getDegrees();
     }
 
-    public void setAutoAimSpeedVal(double val) {
-        autoAimSpeed = val;
-    }
-
-    public double getautoAimSpeedVal() {
-        return autoAimSpeed;
-    }
-
     @Override
     public void periodic() {
         if (SubsystemEnabledConstants.DRIVE_SUBSYSTEM_ENABLED) {
@@ -201,11 +192,10 @@ public class DriveSubsystem extends SubsystemBase {
                     m_rearRight.getTurningAbsoluteEncoder().getPosition()
             });
 
-            SmartDashboard.putNumber("LEFT", m_rearRight.getTurningAbsoluteEncoder().getPosition());
+            //SmartDashboard.putNumber("LEFT", m_rearRight.getTurningAbsoluteEncoder().getPosition());
 
             SmartDashboard.putData("NAVX", m_gyro);
 
-            // Logger.recordOutput("MyPose2d", m_odometry.getEstimatedPosition());
 
             // Update the odometry in the periodic block
             m_odometry.update(
@@ -218,10 +208,17 @@ public class DriveSubsystem extends SubsystemBase {
                     });
 
             try {
+                //ADD NUMBER OF VISION MESUREMENTS FROM CAMERA TO THE ODOMETRY TO SORT OUT
                 m_odometry.addVisionMeasurement(
-                        VisionSubsystem.getEstimatedGlobalPose(getPose().orElseThrow()).orElseThrow().estimatedPose
+                        frontLeftCamera.getEstimatedGlobalPose(getPose().orElseThrow()).orElseThrow().estimatedPose
                                 .toPose2d(),
                         Timer.getFPGATimestamp());
+
+                m_odometry.addVisionMeasurement(
+                        frontRightCamera.getEstimatedGlobalPose(getPose().orElseThrow()).orElseThrow().estimatedPose
+                                .toPose2d(),
+                        Timer.getFPGATimestamp());
+                
             } catch (NoSuchElementException e) {
 
             }

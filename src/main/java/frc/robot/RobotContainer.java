@@ -15,7 +15,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.drive.TeleopDriveCommand;
-import frc.robot.commands.drive.SnapToHeadingCommand;
 import frc.robot.commands.drive.TwistCommand;
 import frc.robot.commands.drive.XCommand;
 import frc.robot.subsystems.DriveSubsystem;
@@ -24,10 +23,9 @@ import frc.robot.commands.automatedCommands.RobotSystemsCheckCommand;
 import frc.robot.commands.drive.GyroReset;
 
 public class RobotContainer {
-
+        
     public final DriveSubsystem driveSubsystem = new DriveSubsystem();
 
-    public final VisionSubsystem visionSubsystem = new VisionSubsystem();
     private final Joystick driveJoystick = new Joystick(RobotConstants.PortConstants.Controller.DRIVE_JOYSTICK);
     private final Joystick operatorJoystick = new Joystick(RobotConstants.PortConstants.Controller.OPERATOR_JOYSTICK);
     //Define joysticks on specified ports. Only for usb input type controllers, use another class for xbox.
@@ -57,14 +55,13 @@ public class RobotContainer {
     }
 
     private void createNamedCommands() {
-        //Add commands here to execute in auto through pathplanner
+        //Add commands here to be able to execute in auto through pathplanner
     }
 
     private void configureButtonBindings(){
         new JoystickButton(driveJoystick, 1).whileTrue(new TwistCommand());
         new JoystickButton(driveJoystick,11).onTrue(new GyroReset(driveSubsystem));
         new JoystickButton(driveJoystick, 3).onTrue((new XCommand()));
-        new JoystickButton(driveJoystick, 2).whileTrue(new SnapToHeadingCommand(driveSubsystem, 45));
 
         ///////////////////     Above = DriveJoystick, Below = OperatorJoystick     /////////////////////////////////////////
 
@@ -87,7 +84,6 @@ public class RobotContainer {
     public Field2d getField() {
         return field;
     }
-    
     public final class UserPolicy {
         public static boolean twistable = false;
         public static boolean xLocked = false;
