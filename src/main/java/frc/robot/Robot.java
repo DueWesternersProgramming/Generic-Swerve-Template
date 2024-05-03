@@ -25,19 +25,14 @@ public class Robot extends TimedRobot {
     @Override
     public void robotInit() {
         m_robotContainer = new RobotContainer();
-        m_robotContainer.preLEDCommand().ignoringDisable(true).schedule();
     }
 
     /**
      * This function is called every 20 ms, no matter the mode. Use this for items
      * like diagnostics
      * that you want ran during disabled, autonomous, teleoperated and test.
-     *
-     * <p>
-     * This runs after the mode specific periodic functions, but before LiveWindow
-     * and
-     * SmartDashboard integrated updating.
-     */
+    **/
+
     @Override
     public void robotPeriodic() {
         // Runs the Scheduler. This is responsible for polling buttons, adding
@@ -53,13 +48,12 @@ public class Robot extends TimedRobot {
     /** This function is called once each time the robot enters Disabled mode. */
     @Override
     public void disabledInit() {
-        m_robotContainer.startLEDCommand().cancel();
-        m_robotContainer.stopLEDCommand().schedule();
+        //As stated
     }
 
     @Override
     public void disabledPeriodic() {
-
+        //As stated
     }
 
     /**
@@ -69,7 +63,6 @@ public class Robot extends TimedRobot {
     @Override
     public void autonomousInit() {
         m_autonomousCommand = m_robotContainer.getAutonomousCommand();
-        m_robotContainer.startLEDCommand().schedule();
 
         // schedule the autonomous command (example)
         if (m_autonomousCommand != null) {
@@ -80,20 +73,17 @@ public class Robot extends TimedRobot {
     /** This function is called periodically during autonomous. */
     @Override
     public void autonomousPeriodic() {
-
+        //As stated
     }
 
     @Override
     public void teleopInit() {
-        m_robotContainer.startLEDCommand().schedule();
-        UserPolicy.shootCommandLocked = false;
-
         if (m_autonomousCommand != null) {
             m_autonomousCommand.cancel();
         }
     }
 
-    /** This function is called periodically during operator control. */
+    /** This function is called periodically during teleop control. */
     @Override
     public void teleopPeriodic() {
         
@@ -108,7 +98,7 @@ public class Robot extends TimedRobot {
         m_robotContainer.getTestingCommand().schedule();
     }
 
-    /** This function is called periodically during test mode. */
+    /** This function is called periodically during test mode (Systems check before a match). */
     @Override
     public void testPeriodic() {
     }
