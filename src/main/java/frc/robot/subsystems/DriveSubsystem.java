@@ -46,9 +46,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 public class DriveSubsystem extends SubsystemBase {
     private SwerveModule m_frontLeft, m_frontRight, m_rearLeft, m_rearRight;
 
-    //Create as many camera instances as cameras you have
-    public final VisionSubsystem frontRightCamera = new VisionSubsystem("backLeftCam", new Translation3d(), new Rotation3d());
-    public final VisionSubsystem frontLeftCamera = new VisionSubsystem("frontLeftCam", new Translation3d(), new Rotation3d());
+    
 
     private AHRS m_gyro;
 
@@ -209,16 +207,27 @@ public class DriveSubsystem extends SubsystemBase {
 
             try {
                 //ADD NUMBER OF VISION MESUREMENTS FROM CAMERA TO THE ODOMETRY TO SORT OUT
-                m_odometry.addVisionMeasurement(
-                        frontLeftCamera.getEstimatedGlobalPose(getPose().orElseThrow()).orElseThrow().estimatedPose
+                m_odometry.addVisionMeasurement(  //Front Left estimator
+                        VisionSubsystem.getEstimatedGlobalPose(
+                            VisionSubsystem.frontLeftPoseEstimator,
+                            VisionSubsystem.frontLeftCamera,
+                            getPose()
+                                .orElseThrow())
+                                .orElseThrow()
+                                .estimatedPose
                                 .toPose2d(),
-                        Timer.getFPGATimestamp());
+                            Timer.getFPGATimestamp());
+                m_odometry.addVisionMeasurement(  //Front Right estimator
+                        VisionSubsystem.getEstimatedGlobalPose(
+                            VisionSubsystem.frontRightPoseEstimator,
+                            VisionSubsystem.frontRightCamera,
+                            getPose()
+                                .orElseThrow())
+                                .orElseThrow()
+                                .estimatedPose
+                                .toPose2d(),
+                            Timer.getFPGATimestamp());
 
-                m_odometry.addVisionMeasurement(
-                        frontRightCamera.getEstimatedGlobalPose(getPose().orElseThrow()).orElseThrow().estimatedPose
-                                .toPose2d(),
-                        Timer.getFPGATimestamp());
-                
             } catch (NoSuchElementException e) {
 
             }
@@ -393,17 +402,6 @@ public class DriveSubsystem extends SubsystemBase {
 
     /** Zeroes the heading of the robot. */
     public void zeroHeading() {
-        if (SubsystemEnabledConstants.DRIVE_SUBSYSTEM_ENABLED) {
-            m_gyro.reset();
-            // m_gyro.setAngleAdjustment(180);
-            // Pose2d pose = getPose().get();
-            // Pose2d pose2 = new Pose2d(pose.getTranslation(), Rotation2d.fromDegrees(0));
-            // resetOdometry(pose2);
-        }
-    }
-
-    /** Calibrates the gyro. */
-    public void calculateHeading() {
         if (SubsystemEnabledConstants.DRIVE_SUBSYSTEM_ENABLED) {
             m_gyro.reset();
         }
