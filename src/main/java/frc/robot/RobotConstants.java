@@ -148,15 +148,16 @@ public final class RobotConstants {
     }
 
     public static class OffsetConstants {
-        public static final double FRONT_OFFSET_HEAVE_M = 0.0;
-        public static final double FRONT_OFFSET_SWAY_M = 0.25;
-        public static final double FRONT_OFFSET_SURGE_M = 0.0;
-        public static final double FRONT_OFFSET_YAW_DEGREES = 45.0;
-        public static final double FRONT_OFFSET_PITCH_DEGREES = 0.0;
-        public static final double FRONT_OFFSET_ROLL_DEGREES = 0.0;
+        // public static final double FRONT_OFFSET_HEAVE_M = 0.0;
+        // public static final double FRONT_OFFSET_SWAY_M = 0.25;
+        // public static final double FRONT_OFFSET_SURGE_M = 0.0;
+        // public static final double FRONT_OFFSET_YAW_DEGREES = 45.0;
+        // public static final double FRONT_OFFSET_PITCH_DEGREES = 0.0;
+        // public static final double FRONT_OFFSET_ROLL_DEGREES = 0.0;
     }
 
     public static final class AutonomousConstants {
+
         public static final double X_CONTROLLER_P = 3.5;
         public static final double Y_CONTROLLER_P = 3.5;
         public static final double THETA_CONTROLLER_P = 5;
@@ -174,9 +175,7 @@ public final class RobotConstants {
     }
 
     public static final class VisionConstants {
-        public static final double AUTO_ALIGN_P = 0.005;
-        public static final double AUTO_ALIGN_I = 0;
-        public static final double AUTO_ALIGN_D = 55;
+        
     }
 
     public static final class TeleopConstants {
@@ -189,43 +188,9 @@ public final class RobotConstants {
         public static final int CLIMBER_RIGHT_COMMAND_AXIS = 5;
     }
 
-    public static final class IntakeConstants {
-        public static final double INTAKE_MOTOR_SPEED = 0.8;
-        public static final double INTAKE_REVERSE_MOTOR_SPEED = -0.40;
-        public static final double INTAKE_MOTOR_SHOOT_SPEED = 1;
-
-    }
-    
-    public static final class ShooterConstants {
-        public static final double SHOOTER_MOTOR_SPEAKER_VOLTAGE = 12.5;
-        public static final double SHOOTER_MOTOR_AMP_VOLTAGE = 2.25;
-        public static final double SERVO_BEGINNING_POSITION = 0.2;
-        public static final double SERVO_SHOOTING_POSITION = 0.65;
-    }
-
-    public static final class TransitConstants {
-        public static final double TRANSIT_MOTOR_SPEED = 0.7;
-        public static final double REVERSE_TRANSIT_MOTOR_SPEED = -0.20;
-    }
-
-    public static final class LightConstants {
-        public static final int LIGHT_COUNT = 8;
-        public static final double LIGHT_BRIGHTNESS = 0.25;
-      }
-    
-    public static final class ClimberConstants {
-        public static final double CLIMBER_MOTOR_SPEED = 0.2;
-        public static final double CLIMBER_DOWN_POSITION = 0;
-        public static final double CLIMBER_UP_POSITION = 100;
-    }
 
     public static final class SubsystemEnabledConstants {
         public static final boolean DRIVE_SUBSYSTEM_ENABLED = true;
-        public static final boolean CLIMBER_SUBSYSTEM_ENABLED = true;
-        public static final boolean INTAKE_SUBSYSTEM_ENABLED = true;
-        public static final boolean SHOOTER_SUBSYSTEM_ENABLED = true;
-        public static final boolean TRANSIT_SUBSYSTEM_ENABLED = true;
-        public static final boolean LIGHT_SUBSYSTEM_ENABLED = true;
         public static final boolean VISION_SUBSYSTEM_ENABLED = true;
     }
 }
