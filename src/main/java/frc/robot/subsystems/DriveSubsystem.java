@@ -46,8 +46,6 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 public class DriveSubsystem extends SubsystemBase {
     private SwerveModule m_frontLeft, m_frontRight, m_rearLeft, m_rearRight;
 
-    
-
     private AHRS m_gyro;
 
     private double m_currentRotation = 0.0;
@@ -88,14 +86,6 @@ public class DriveSubsystem extends SubsystemBase {
 
             m_gyro = new AHRS(Port.kMXP);
             m_gyro.reset();
-            // m_gyro.zeroYaw();
-
-            // Translation2d initialTranslation = new
-            // Translation2d(Units.inchesToMeters(AutonomousConstants.FIELD_LENGTH_INCHES /
-            // 2),
-            // Units.inchesToMeters(AutonomousConstants.FIELD_WIDTH_INCHES / 2)); // mid
-            // field
-            // Rotation2d initialRotation = Rotation2d.fromDegrees(180);
 
             resetEncoders();
 
@@ -151,6 +141,8 @@ public class DriveSubsystem extends SubsystemBase {
         }
     }
 
+    
+
     private double getGyroAngle() {
         return m_gyro.getAngle();
     }
@@ -162,7 +154,9 @@ public class DriveSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         if (SubsystemEnabledConstants.DRIVE_SUBSYSTEM_ENABLED) {
+
             field.setRobotPose(m_odometry.getEstimatedPosition());
+
             SmartDashboard.putData("Odometry Pose Field", field);
             SmartDashboard.putNumberArray("modules pose angles", new double[] {
                     m_frontLeft.getPosition().angle.getDegrees(),
@@ -204,34 +198,35 @@ public class DriveSubsystem extends SubsystemBase {
                             m_rearLeft.getPosition(),
                             m_rearRight.getPosition()
                     });
+            
+            if (SubsystemEnabledConstants.VISION_SUBSYSTEM_ENABLED){
+                try {
+                    //ADD NUMBER OF VISION MESUREMENTS FROM CAMERA TO THE ODOMETRY TO SORT OUT
+                        m_odometry.addVisionMeasurement(  //Front Left estimator
+                                VisionSubsystem.getEstimatedGlobalPose(
+                                    VisionSubsystem.frontLeftPoseEstimator,
+                                    VisionSubsystem.frontLeftCamera,
+                                    getPose()
+                                        .orElseThrow())
+                                        .orElseThrow()
+                                        .estimatedPose
+                                        .toPose2d(),
+                                    Timer.getFPGATimestamp());
+                        m_odometry.addVisionMeasurement(  //Front Right estimator
+                                VisionSubsystem.getEstimatedGlobalPose(
+                                    VisionSubsystem.frontRightPoseEstimator,
+                                    VisionSubsystem.frontRightCamera,
+                                    getPose()
+                                        .orElseThrow())
+                                        .orElseThrow()
+                                        .estimatedPose
+                                        .toPose2d(),
+                                    Timer.getFPGATimestamp());
 
-            try {
-                //ADD NUMBER OF VISION MESUREMENTS FROM CAMERA TO THE ODOMETRY TO SORT OUT
-                m_odometry.addVisionMeasurement(  //Front Left estimator
-                        VisionSubsystem.getEstimatedGlobalPose(
-                            VisionSubsystem.frontLeftPoseEstimator,
-                            VisionSubsystem.frontLeftCamera,
-                            getPose()
-                                .orElseThrow())
-                                .orElseThrow()
-                                .estimatedPose
-                                .toPose2d(),
-                            Timer.getFPGATimestamp());
-                m_odometry.addVisionMeasurement(  //Front Right estimator
-                        VisionSubsystem.getEstimatedGlobalPose(
-                            VisionSubsystem.frontRightPoseEstimator,
-                            VisionSubsystem.frontRightCamera,
-                            getPose()
-                                .orElseThrow())
-                                .orElseThrow()
-                                .estimatedPose
-                                .toPose2d(),
-                            Timer.getFPGATimestamp());
-
-            } catch (NoSuchElementException e) {
-
+                } catch (NoSuchElementException e) {
+                    System.out.println(e);
+                }
             }
-
         }
     }
 

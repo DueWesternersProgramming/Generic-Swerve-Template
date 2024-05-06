@@ -86,6 +86,10 @@ public class Robot extends TimedRobot {
     /** This function is called periodically during teleop control. */
     @Override
     public void teleopPeriodic() {
+        //We use the commandschedular run command to execute all the subsystems periodics.
+    }
+
+    public void simulationPeriodic(){ 
         
     }
 
