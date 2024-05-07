@@ -157,6 +157,7 @@ public final class RobotConstants {
     }
 
     public static final class AutonomousConstants {
+        public static final boolean FLIP_PATHPLANNER_AUTOS = false;
 
         public static final double X_CONTROLLER_P = 3.5;
         public static final double Y_CONTROLLER_P = 3.5;
