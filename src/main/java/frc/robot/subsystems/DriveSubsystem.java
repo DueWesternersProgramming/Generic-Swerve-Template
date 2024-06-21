@@ -13,8 +13,6 @@ import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -25,10 +23,12 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SPI.Port;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotConstants;
 import frc.robot.RobotConstants.DrivetrainConstants;
 import frc.robot.RobotConstants.SubsystemEnabledConstants;
+import frc.robot.RobotContainer.UserPolicy;
 import frc.robot.RobotConstants.AutonomousConstants;
 import frc.robot.swerve.SwerveModule;
 import frc.robot.swerve.SwerveUtils;
@@ -57,7 +57,6 @@ public class DriveSubsystem extends SubsystemBase {
     private double m_prevTime = WPIUtilJNI.now() * 1e-6;
 
     private SwerveDrivePoseEstimator m_odometry;
-
 
     Field2d field = new Field2d();
 
@@ -115,8 +114,7 @@ public class DriveSubsystem extends SubsystemBase {
                                     AutonomousConstants.X_CONTROLLER_D), // Translation PID constants
                             new PIDConstants(AutonomousConstants.THETA_CONTROLLER_P,
                                     AutonomousConstants.THETA_CONTROLLER_I, AutonomousConstants.THETA_CONTROLLER_D), // Rotation
-                                                                                                                     // PID
-                                                                                                                     // constants
+
                             RobotConstants.DrivetrainConstants.MAX_SPEED_METERS_PER_SECOND, // Max module speed, in m/s
                             RobotConstants.DrivetrainConstants.DRIVE_BASE_RADIUS_METERS, // Drive base radius in meters.
                                                                                          // Distance from robot center
@@ -140,8 +138,6 @@ public class DriveSubsystem extends SubsystemBase {
             );
         }
     }
-
-    
 
     private double getGyroAngle() {
         return m_gyro.getAngle();
@@ -183,11 +179,7 @@ public class DriveSubsystem extends SubsystemBase {
                     m_rearLeft.getTurningAbsoluteEncoder().getPosition(),
                     m_rearRight.getTurningAbsoluteEncoder().getPosition()
             });
-
-            //SmartDashboard.putNumber("LEFT", m_rearRight.getTurningAbsoluteEncoder().getPosition());
-
             SmartDashboard.putData("NAVX", m_gyro);
-
 
             // Update the odometry in the periodic block
             m_odometry.update(
@@ -198,30 +190,27 @@ public class DriveSubsystem extends SubsystemBase {
                             m_rearLeft.getPosition(),
                             m_rearRight.getPosition()
                     });
-            
-            if (SubsystemEnabledConstants.VISION_SUBSYSTEM_ENABLED){
+
+            if (SubsystemEnabledConstants.VISION_SUBSYSTEM_ENABLED) {
                 try {
-                    //ADD NUMBER OF VISION MESUREMENTS FROM CAMERA TO THE ODOMETRY TO SORT OUT
-                        m_odometry.addVisionMeasurement(  //Front Left estimator
-                                VisionSubsystem.getEstimatedGlobalPose(
+                    m_odometry.addVisionMeasurement( // Front Left estimator
+                            VisionSubsystem.getEstimatedGlobalPose(
                                     VisionSubsystem.frontLeftPoseEstimator,
                                     VisionSubsystem.frontLeftCamera,
                                     getPose()
-                                        .orElseThrow())
-                                        .orElseThrow()
-                                        .estimatedPose
-                                        .toPose2d(),
-                                    Timer.getFPGATimestamp());
-                        m_odometry.addVisionMeasurement(  //Front Right estimator
-                                VisionSubsystem.getEstimatedGlobalPose(
+                                            .orElseThrow())
+                                    .orElseThrow().estimatedPose
+                                    .toPose2d(),
+                            Timer.getFPGATimestamp());
+                    m_odometry.addVisionMeasurement( // Front Right estimator
+                            VisionSubsystem.getEstimatedGlobalPose(
                                     VisionSubsystem.frontRightPoseEstimator,
                                     VisionSubsystem.frontRightCamera,
                                     getPose()
-                                        .orElseThrow())
-                                        .orElseThrow()
-                                        .estimatedPose
-                                        .toPose2d(),
-                                    Timer.getFPGATimestamp());
+                                            .orElseThrow())
+                                    .orElseThrow().estimatedPose
+                                    .toPose2d(),
+                            Timer.getFPGATimestamp());
 
                 } catch (NoSuchElementException e) {
                     System.out.println(e);
@@ -230,21 +219,11 @@ public class DriveSubsystem extends SubsystemBase {
         }
     }
 
-    /**
-     * Returns the currently-estimated pose of the robot.
-     *
-     * @return The pose.
-     */
     public Optional<Pose2d> getPose() {
         return SubsystemEnabledConstants.DRIVE_SUBSYSTEM_ENABLED ? Optional.of(m_odometry.getEstimatedPosition())
                 : Optional.empty();
     }
 
-    /**
-     * Resets the odometry to the specified pose.
-     *
-     * @param pose The pose to which to set the odometry.
-     */
     public void resetOdometry(Pose2d pose) {
         if (SubsystemEnabledConstants.DRIVE_SUBSYSTEM_ENABLED) {
             m_odometry.resetPosition(
@@ -404,7 +383,7 @@ public class DriveSubsystem extends SubsystemBase {
 
     /**
      * Returns the heading of the robot.
-     *
+     * 
      * @return the robot's heading in degrees, from -180 to 180
      */
     public Optional<Double> getHeading() {
@@ -412,18 +391,6 @@ public class DriveSubsystem extends SubsystemBase {
                 ? Optional
                         .of(Rotation2d.fromDegrees(DrivetrainConstants.GYRO_ORIENTATION * getGyroAngle()).getDegrees())
                 : Optional.empty();
-    }
-
-    /**
-     * Returns the turn rate of the robot.
-     *
-     * @return The turn rate of the robot, in degrees per second
-     */
-    public Optional<Double> getTurnRate() {
-        return SubsystemEnabledConstants.DRIVE_SUBSYSTEM_ENABLED
-                ? Optional.of(m_gyro.getRate() * (DrivetrainConstants.GYRO_ORIENTATION))
-                : Optional.empty();
-
     }
 
     public Optional<SwerveModule> getFrontLeftModule() {
@@ -457,4 +424,29 @@ public class DriveSubsystem extends SubsystemBase {
         return ChassisSpeeds.fromRobotRelativeSpeeds(m_gyro.getVelocityX(), m_gyro.getVelocityY(), radiansPerSecond,
                 m_gyro.getRotation2d());
     }
+
+    public Command gyroReset() {
+        return run(() -> {
+            zeroHeading();
+        });
+    }
+
+    public Command TwistCommand() {
+        return startEnd(
+                () -> {
+                    UserPolicy.twistable = true;
+                },
+
+                () -> {
+                    UserPolicy.twistable = false;
+
+                });
+    }
+
+    public Command xCommand() {
+        return run(() -> {
+            UserPolicy.xLocked = !UserPolicy.xLocked;
+        });
+    }
+
 }

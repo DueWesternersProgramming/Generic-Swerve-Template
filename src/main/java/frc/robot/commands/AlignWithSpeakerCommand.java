@@ -1,4 +1,4 @@
-package frc.robot.commands.automatedCommands.teleop;
+package frc.robot.commands;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.PathConstraints;
@@ -12,6 +12,7 @@ import frc.robot.subsystems.DriveSubsystem;
 
 public class AlignWithSpeakerCommand extends Command {
     DriveSubsystem driveSubsystem;
+
     public AlignWithSpeakerCommand(DriveSubsystem driveSubsystem) {
         this.driveSubsystem = driveSubsystem;
         addRequirements(driveSubsystem);
@@ -31,12 +32,14 @@ public class AlignWithSpeakerCommand extends Command {
                 targetPose,
                 constraints,
                 0.0, // Goal end velocity in meters/sec
-                0.0 // Rotation delay distance in meters. This is how far the robot should travel before attempting to rotate.
+                0.0 // Rotation delay distance in meters. This is how far the robot should travel
+                    // before attempting to rotate.
         );
         pathfindingCommand.schedule();
     }
+
     public void execute() {
-}
+    }
 
     @Override
     public boolean isFinished() {
