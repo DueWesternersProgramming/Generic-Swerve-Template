@@ -1,7 +1,3 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot.subsystems;
 
 import java.util.NoSuchElementException;
@@ -142,6 +138,16 @@ public class DriveSubsystem extends SubsystemBase {
     public void periodic() {
         if (SubsystemEnabledConstants.DRIVE_SUBSYSTEM_ENABLED) {
 
+            // Update the odometry in the periodic block
+            m_odometry.update(
+                    Rotation2d.fromDegrees(DrivetrainConstants.GYRO_ORIENTATION * m_gyro.getAngle()),
+                    new SwerveModulePosition[] {
+                            m_frontLeft.getPosition(),
+                            m_frontRight.getPosition(),
+                            m_rearLeft.getPosition(),
+                            m_rearRight.getPosition()
+                    });
+
             field.setRobotPose(m_odometry.getEstimatedPosition());
 
             SmartDashboard.putData("Odometry Pose Field", field);
@@ -172,40 +178,31 @@ public class DriveSubsystem extends SubsystemBase {
             });
             SmartDashboard.putData("NAVX", m_gyro);
 
-            // Update the odometry in the periodic block
-            m_odometry.update(
-                    Rotation2d.fromDegrees(DrivetrainConstants.GYRO_ORIENTATION * m_gyro.getAngle()),
-                    new SwerveModulePosition[] {
-                            m_frontLeft.getPosition(),
-                            m_frontRight.getPosition(),
-                            m_rearLeft.getPosition(),
-                            m_rearRight.getPosition()
-                    });
+        }
+        // Vision pose estimates are added into the main odometry filter.
+        if (SubsystemEnabledConstants.VISION_SUBSYSTEM_ENABLED) {
+            try {
 
-            if (SubsystemEnabledConstants.VISION_SUBSYSTEM_ENABLED) {
-                try {
-                    m_odometry.addVisionMeasurement( // Front Left estimator
-                            VisionSubsystem.getEstimatedGlobalPose(
-                                    VisionSubsystem.frontLeftPoseEstimator,
-                                    VisionSubsystem.frontLeftCamera,
-                                    getPose()
-                                            .orElseThrow())
-                                    .orElseThrow().estimatedPose
-                                    .toPose2d(),
-                            Timer.getFPGATimestamp());
-                    m_odometry.addVisionMeasurement( // Front Right estimator
-                            VisionSubsystem.getEstimatedGlobalPose(
-                                    VisionSubsystem.frontRightPoseEstimator,
-                                    VisionSubsystem.frontRightCamera,
-                                    getPose()
-                                            .orElseThrow())
-                                    .orElseThrow().estimatedPose
-                                    .toPose2d(),
-                            Timer.getFPGATimestamp());
+                m_odometry.addVisionMeasurement(
+                        VisionSubsystem
+                                .getEstimatedGlobalPose(VisionSubsystem.frontLeftPoseEstimator,
+                                        VisionSubsystem.frontLeftCamera, getPose().orElseThrow())
+                                .orElseThrow().estimatedPose.toPose2d(),
+                        Timer.getFPGATimestamp());
 
-                } catch (NoSuchElementException e) {
-                    System.out.println(e);
-                }
+            } catch (NoSuchElementException e) {
+
+            }
+
+            try {
+                m_odometry.addVisionMeasurement(
+                        VisionSubsystem
+                                .getEstimatedGlobalPose(VisionSubsystem.frontRightPoseEstimator,
+                                        VisionSubsystem.frontRightCamera, getPose().orElseThrow())
+                                .orElseThrow().estimatedPose.toPose2d(),
+                        Timer.getFPGATimestamp());
+            } catch (NoSuchElementException i) {
+
             }
         }
     }
@@ -418,6 +415,7 @@ public class DriveSubsystem extends SubsystemBase {
 
     public Command gyroReset() {
         return run(() -> {
+            // init
             zeroHeading();
         });
     }
@@ -425,10 +423,12 @@ public class DriveSubsystem extends SubsystemBase {
     public Command TwistCommand() {
         return startEnd(
                 () -> {
+                    // init
                     UserPolicy.twistable = true;
                 },
 
                 () -> {
+                    // end
                     UserPolicy.twistable = false;
 
                 });
@@ -436,6 +436,7 @@ public class DriveSubsystem extends SubsystemBase {
 
     public Command xCommand() {
         return run(() -> {
+            // init
             UserPolicy.xLocked = !UserPolicy.xLocked;
         });
     }

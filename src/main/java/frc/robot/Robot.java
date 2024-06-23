@@ -6,9 +6,7 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.RobotContainer.UserPolicy;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -32,8 +30,7 @@ public class Robot extends TimedRobot {
      * This function is called every 20 ms, no matter the mode. Use this for items
      * like diagnostics
      * that you want ran during disabled, autonomous, teleoperated and test.
-    **/
-
+     **/
     @Override
     public void robotPeriodic() {
         // Runs the Scheduler. This is responsible for polling buttons, adding
@@ -49,12 +46,12 @@ public class Robot extends TimedRobot {
     /** This function is called once each time the robot enters Disabled mode. */
     @Override
     public void disabledInit() {
-        //As stated
+        // As stated
     }
 
     @Override
     public void disabledPeriodic() {
-        //As stated
+        // As stated
     }
 
     /**
@@ -71,10 +68,9 @@ public class Robot extends TimedRobot {
         }
     }
 
-    /** This function is called periodically during autonomous. */
     @Override
     public void autonomousPeriodic() {
-        //As stated
+        // As stated
     }
 
     @Override
@@ -85,29 +81,28 @@ public class Robot extends TimedRobot {
         CommandScheduler.getInstance().cancelAll();
     }
 
-    /** This function is called periodically during teleop control. */
     @Override
     public void teleopPeriodic() {
     }
 
-    public void simulationPeriodic(){ 
-        
-    }
     @Override
-    public void simulationInit() {
-        
+    public void simulationPeriodic() {
+
     }
 
+    @Override
+    public void simulationInit() {
+
+    }
 
     @Override
     public void testInit() {
         // Cancels all running commands at the start of test mode.
         CommandScheduler.getInstance().cancelAll();
-        
+
         m_robotContainer.getTestingCommand().schedule();
     }
 
-    /** This function is called periodically during test mode (Systems check before a match). */
     @Override
     public void testPeriodic() {
     }
