@@ -5,7 +5,7 @@
 package frc.robot.swerve;
 
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.REVPhysicsSim;
+
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
@@ -14,8 +14,6 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import frc.robot.RobotConstants.SwerveModuleConstants;
 import frc.robot.sensors.CanCoder;
-import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.wpilibj.simulation.SimDeviceSim;
 
 /**
  * The {@code SwerveModule} class contains fields and methods pertaining to the
