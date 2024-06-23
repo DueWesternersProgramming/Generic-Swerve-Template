@@ -1,17 +1,12 @@
 {
   "HALProvider": {
     "Other Devices": {
-      "CANCoder (v6)[3]": {
+      "SPARK MAX [7]": {
         "header": {
           "open": true
         }
       },
-      "SPARK MAX [5]": {
-        "header": {
-          "open": true
-        }
-      },
-      "navX-Sensor[0]": {
+      "SPARK MAX [9]": {
         "header": {
           "open": true
         }
@@ -39,6 +34,9 @@
           "open": true
         }
       },
+      "Shuffleboard": {
+        "open": true
+      },
       "SmartDashboard": {
         "NAVX": {
           "open": true
@@ -46,9 +44,9 @@
         "Odometry Pose Field": {
           "double[]##v_/SmartDashboard/Odometry Pose Field/Robot": {
             "open": true
-          },
-          "open": true
-        }
+          }
+        },
+        "open": true
       }
     }
   },

@@ -16,7 +16,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.AlignWithSpeakerCommand;
 import frc.robot.commands.RobotSystemsCheckCommand;
-import frc.robot.commands.drive.MoveAtPowerCommand;
 import frc.robot.commands.drive.TeleopDriveCommand;
 import frc.robot.subsystems.DriveSubsystem;
 
