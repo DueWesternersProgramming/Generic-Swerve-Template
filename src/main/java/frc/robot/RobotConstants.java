@@ -1,17 +1,21 @@
 package frc.robot;
 
+import com.pathplanner.lib.path.PathConstraints;
 import com.revrobotics.CANSparkBase.IdleMode;
 
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 public final class RobotConstants {
     public static final class DrivetrainConstants {
         public static final double FRONT_LEFT_VIRTUAL_OFFSET_RADIANS = 0;
-        public static final double FRONT_RIGHT_VIRTUAL_OFFSET_RADIANS = 0; // We do not apply an offset, we just zero
-                                                                           // the encoders with the wheels forward
+        public static final double FRONT_RIGHT_VIRTUAL_OFFSET_RADIANS = 0; // -We do not apply an offset to the CANcoder
+                                                                           // angle, we just zero the encoders with the
+                                                                           // wheels forward
+                                                                           // -In radians
         public static final double REAR_LEFT_VIRTUAL_OFFSET_RADIANS = 0;
         public static final double REAR_RIGHT_VIRTUAL_OFFSET_RADIANS = 0;
 
@@ -169,6 +173,19 @@ public final class RobotConstants {
         public static final int DRIVE_COMMAND_X_AXIS = 0;
         public static final int DRIVE_COMMAND_Y_AXIS = 1;
         public static final int DRIVE_COMMAND_ROT_AXIS = 2;
+    }
+
+    public static final class PathPlannerConstants {
+        public static final Alliance DEFAULT_ALLIANCE = Alliance.Blue;
+
+        public static final double kMaxAngularAcceleration = 4 * Math.PI;
+        public static final double kMaxAccelerationMetersPerSecondSquared = 3.00;
+
+        public static final PathConstraints DEFAULT_PATH_CONSTRAINTS = new PathConstraints(
+                DrivetrainConstants.MAX_SPEED_METERS_PER_SECOND,
+                PathPlannerConstants.kMaxAccelerationMetersPerSecondSquared,
+                DrivetrainConstants.MAX_ANGULAR_SPEED_RADIANS_PER_SECOND,
+                5 * Math.PI);
     }
 
     public static final class SubsystemEnabledConstants {
