@@ -170,9 +170,16 @@ public final class RobotConstants {
         public static final double MAX_SPEED_PERCENT = 1; // ex: 0.4 -> 40%
 
         // Joystick Axis
+
+        // Xbox controller
+        // public static final int DRIVE_COMMAND_X_AXIS = 0;
+        // public static final int DRIVE_COMMAND_Y_AXIS = 1;
+        // public static final int DRIVE_COMMAND_ROT_AXIS = 2;
+
+        // Logitech controller so Harrison can test ;)
         public static final int DRIVE_COMMAND_X_AXIS = 0;
         public static final int DRIVE_COMMAND_Y_AXIS = 1;
-        public static final int DRIVE_COMMAND_ROT_AXIS = 2;
+        public static final int DRIVE_COMMAND_ROT_AXIS = 4;
     }
 
     public static final class PathPlannerConstants {

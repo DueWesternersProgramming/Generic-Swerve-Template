@@ -17,7 +17,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.AlignWithSpeakerCommand;
 import frc.robot.commands.RobotSystemsCheckCommand;
 import frc.robot.commands.drive.TeleopDriveCommand;
-import frc.robot.subsystems.drive.DriveSubsystem;
+import frc.robot.subsystems.DriveSubsystem;
 
 public class RobotContainer {
 
