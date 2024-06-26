@@ -31,6 +31,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotConstants;
+import frc.robot.utils;
 import frc.robot.RobotConstants.DrivetrainConstants;
 import frc.robot.RobotConstants.SubsystemEnabledConstants;
 import frc.robot.RobotContainer.UserPolicy;
@@ -160,7 +161,7 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     private double getGyroAngle() {
-        return RobotBase.isReal() ? m_gyro.getAngle() : fakeGyro;
+        return RobotBase.isReal() ? m_gyro.getAngle() * DrivetrainConstants.GYRO_ORIENTATION : fakeGyro;
     }
 
     public SwerveModuleState[] getModuleStates() {
@@ -379,9 +380,8 @@ public class DriveSubsystem extends SubsystemBase {
             double rotDelivered = m_currentRotation * DrivetrainConstants.MAX_ANGULAR_SPEED_RADIANS_PER_SECOND;
 
             Rotation2d rotation = Rotation2d.fromDegrees(
-                    DrivetrainConstants.GYRO_ORIENTATION * getGyroAngle()
-                            + (DriverStation.getAlliance().isPresent()
-                                    && DriverStation.getAlliance().get() == Alliance.Red ? 0 : 0));
+                    getGyroAngle()
+                            + (utils.isRedAlliance() ? 180 : 0));
             var swerveModuleStates = DrivetrainConstants.DRIVE_KINEMATICS.toSwerveModuleStates(
                     fieldRelative
                             ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered,
