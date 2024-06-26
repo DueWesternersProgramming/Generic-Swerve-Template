@@ -41,10 +41,7 @@ public class SwerveModuleSim {
      */
     private SwerveModuleState state = new SwerveModuleState(0.0, new Rotation2d(0));
 
-    private final double chassisAngularOffset;
-
-    public SwerveModuleSim(double chassisAngularOffset) {
-        this.chassisAngularOffset = chassisAngularOffset;
+    public SwerveModuleSim() {
 
         this.timer.start();
         this.lastTime = timer.get();
@@ -59,19 +56,20 @@ public class SwerveModuleSim {
         // Apply chassis angular offset to the desired state.
         SwerveModuleState angularOffsetState = new SwerveModuleState(
                 desiredState.speedMetersPerSecond,
-                desiredState.angle.plus(new Rotation2d(chassisAngularOffset)));
+                desiredState.angle);
 
         // Optimize the reference state to avoid spinning further than 90 degrees.
-        SwerveModuleState optimizedState = SwerveModuleState.optimize(angularOffsetState, state.angle);
+        // SwerveModuleState optimizedState =
+        // SwerveModuleState.optimize(angularOffsetState, state.angle);
 
         // Find timer stuff for updating the fake pos & speed
         double currentTime = timer.get();
 
         dt = currentTime - lastTime;
         lastTime = currentTime;
-        state = optimizedState;
+        state = angularOffsetState;
         // Set the state and fake pos & speed
-        fakeSpeed = optimizedState.speedMetersPerSecond;
+        fakeSpeed = state.speedMetersPerSecond;
         fakePos += fakeSpeed * dt; // 20 ms
     }
 

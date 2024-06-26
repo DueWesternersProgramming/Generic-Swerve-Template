@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.AlignWithSpeakerCommand;
 import frc.robot.commands.RobotSystemsCheckCommand;
+import frc.robot.commands.drive.MoveAtPowerCommand;
 import frc.robot.commands.drive.TeleopDriveCommand;
 import frc.robot.subsystems.DriveSubsystem;
 
@@ -55,8 +56,6 @@ public class RobotContainer {
     }
 
     private void configureButtonBindings() {
-        new JoystickButton(driveJoystick, 1).whileTrue(driveSubsystem.TwistCommand());
-        new JoystickButton(driveJoystick, 11).onTrue(driveSubsystem.gyroReset());
         new JoystickButton(driveJoystick, 3).onTrue((driveSubsystem.xCommand()));
 
         // Above = DriveJoystick, Below = OperatorJoystick
@@ -80,7 +79,6 @@ public class RobotContainer {
     }
 
     public final class UserPolicy {
-        public static boolean twistable = false;
         public static boolean xLocked = false;
     }
 }

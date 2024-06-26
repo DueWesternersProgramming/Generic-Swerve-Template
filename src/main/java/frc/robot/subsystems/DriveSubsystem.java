@@ -2,6 +2,10 @@ package frc.robot.subsystems;
 
 import java.util.NoSuchElementException;
 import java.util.Optional;
+
+import org.littletonrobotics.junction.AutoLogOutput;
+import org.littletonrobotics.junction.Logger;
+
 import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -13,6 +17,11 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.DoublePublisher;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.Publisher;
+import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.util.WPIUtilJNI;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -55,19 +64,24 @@ public class DriveSubsystem extends SubsystemBase {
     private double m_prevTime = WPIUtilJNI.now() * 1e-6;
     private Rotation2d m_trackedRotation = new Rotation2d();
     private SwerveDrivePoseEstimator m_odometry;
-    private double fakeGyro = 0;
+    private double fakeGyro = 45;
     Field2d field = new Field2d();
+
+    // temp:
+    StructArrayPublisher<SwerveModuleState> publisher = NetworkTableInstance.getDefault()
+            .getStructArrayTopic("MyStates", SwerveModuleState.struct).publish();
 
     /** Creates a new Drivetrain. */
     public DriveSubsystem() {
         if (SubsystemEnabledConstants.DRIVE_SUBSYSTEM_ENABLED) {
 
             if (RobotBase.isSimulation()) {
+
                 // Make simulated swerve modules
-                swerveModuleSims[0] = new SwerveModuleSim(Math.toRadians(-180));
-                swerveModuleSims[1] = new SwerveModuleSim(Math.toRadians(0));
-                swerveModuleSims[2] = new SwerveModuleSim(Math.toRadians(180));
-                swerveModuleSims[3] = new SwerveModuleSim(Math.toRadians(180));
+                swerveModuleSims[0] = new SwerveModuleSim(); // Front Left
+                swerveModuleSims[1] = new SwerveModuleSim(); // Front Right
+                swerveModuleSims[2] = new SwerveModuleSim(); // Rear Left
+                swerveModuleSims[3] = new SwerveModuleSim(); // Rear Right
 
                 m_odometry = new SwerveDrivePoseEstimator(
                         DrivetrainConstants.DRIVE_KINEMATICS,
@@ -105,6 +119,7 @@ public class DriveSubsystem extends SubsystemBase {
                 m_gyro = new AHRS(Port.kMXP);
                 m_gyro.reset();
                 resetEncoders();
+
                 m_odometry = new SwerveDrivePoseEstimator(
                         DrivetrainConstants.DRIVE_KINEMATICS,
                         Rotation2d.fromDegrees(DrivetrainConstants.GYRO_ORIENTATION * getGyroAngle()),
@@ -117,11 +132,6 @@ public class DriveSubsystem extends SubsystemBase {
 
             }
         }
-
-        // swerveModules[0].calibrateVirtualPosition(DrivetrainConstants.FRONT_LEFT_VIRTUAL_OFFSET_RADIANS);
-        // swerveModules[1].calibrateVirtualPosition(DrivetrainConstants.FRONT_RIGHT_VIRTUAL_OFFSET_RADIANS);
-        // swerveModules[2].calibrateVirtualPosition(DrivetrainConstants.REAR_LEFT_VIRTUAL_OFFSET_RADIANS);
-        // swerveModules[3].calibrateVirtualPosition(DrivetrainConstants.REAR_RIGHT_VIRTUAL_OFFSET_RADIANS);
 
         AutoBuilder.configureHolonomic(
                 m_odometry::getEstimatedPosition, // Robot pose supplier
@@ -194,9 +204,11 @@ public class DriveSubsystem extends SubsystemBase {
 
         else {
             SmartDashboard.putNumber("Fake Gyro value:", getGyroAngle());
-
             SmartDashboard.putNumber("hehe", m_currentRotation);
             SmartDashboard.putData("Odometry Pose Field", field);
+            publisher.set(new SwerveModuleState[] { swerveModuleSims[0].getState(), swerveModuleSims[1].getState(),
+                    swerveModuleSims[2].getState(), swerveModuleSims[3].getState() });
+
         }
     }
 
@@ -398,14 +410,25 @@ public class DriveSubsystem extends SubsystemBase {
      */
     public void setX() {
         if (SubsystemEnabledConstants.DRIVE_SUBSYSTEM_ENABLED) {
-            swerveModules[0].setDesiredState(new SwerveModuleState(0,
-                    Rotation2d.fromDegrees(45)));
-            swerveModules[1].setDesiredState(new SwerveModuleState(0,
-                    Rotation2d.fromDegrees(-45)));
-            swerveModules[2].setDesiredState(new SwerveModuleState(0,
-                    Rotation2d.fromDegrees(-45)));
-            swerveModules[3].setDesiredState(new SwerveModuleState(0,
-                    Rotation2d.fromDegrees(45)));
+            if (RobotBase.isReal()) {
+                swerveModules[0].setDesiredState(new SwerveModuleState(0,
+                        Rotation2d.fromDegrees(45)));
+                swerveModules[1].setDesiredState(new SwerveModuleState(0,
+                        Rotation2d.fromDegrees(-45)));
+                swerveModules[2].setDesiredState(new SwerveModuleState(0,
+                        Rotation2d.fromDegrees(-45)));
+                swerveModules[3].setDesiredState(new SwerveModuleState(0,
+                        Rotation2d.fromDegrees(45)));
+            } else {
+                swerveModuleSims[0].setDesiredState(new SwerveModuleState(0,
+                        Rotation2d.fromDegrees(45)));
+                swerveModuleSims[1].setDesiredState(new SwerveModuleState(0,
+                        Rotation2d.fromDegrees(-45)));
+                swerveModuleSims[2].setDesiredState(new SwerveModuleState(0,
+                        Rotation2d.fromDegrees(-45)));
+                swerveModuleSims[3].setDesiredState(new SwerveModuleState(0,
+                        Rotation2d.fromDegrees(45)));
+            }
         }
     }
 
@@ -418,11 +441,17 @@ public class DriveSubsystem extends SubsystemBase {
         if (SubsystemEnabledConstants.DRIVE_SUBSYSTEM_ENABLED) {
             SwerveDriveKinematics.desaturateWheelSpeeds(
                     desiredStates, DrivetrainConstants.MAX_SPEED_METERS_PER_SECOND);
-
-            swerveModules[0].setDesiredState(desiredStates[0]);
-            swerveModules[1].setDesiredState(desiredStates[1]);
-            swerveModules[2].setDesiredState(desiredStates[2]);
-            swerveModules[3].setDesiredState(desiredStates[3]);
+            if (RobotBase.isReal()) {
+                swerveModules[0].setDesiredState(desiredStates[0]);
+                swerveModules[1].setDesiredState(desiredStates[1]);
+                swerveModules[2].setDesiredState(desiredStates[2]);
+                swerveModules[3].setDesiredState(desiredStates[3]);
+            } else {
+                swerveModuleSims[0].setDesiredState(desiredStates[0]);
+                swerveModuleSims[1].setDesiredState(desiredStates[1]);
+                swerveModuleSims[2].setDesiredState(desiredStates[2]);
+                swerveModuleSims[3].setDesiredState(desiredStates[3]);
+            }
         }
     }
 
@@ -506,20 +535,6 @@ public class DriveSubsystem extends SubsystemBase {
                 zeroHeading();
             }
         });
-    }
-
-    public Command TwistCommand() {
-        return startEnd(
-                () -> {
-                    // init
-                    UserPolicy.twistable = true;
-                },
-
-                () -> {
-                    // end
-                    UserPolicy.twistable = false;
-
-                });
     }
 
     public Command xCommand() {

@@ -30,14 +30,11 @@ public class TeleopDriveCommand extends Command {
         if (SubsystemEnabledConstants.DRIVE_SUBSYSTEM_ENABLED) {
             boolean fieldRelative = DrivetrainConstants.FIELD_RELATIVE;
 
-            double xRaw = -(joystick.getRawAxis(TeleopConstants.DRIVE_COMMAND_X_AXIS));
-            double yRaw = -(joystick.getRawAxis(TeleopConstants.DRIVE_COMMAND_Y_AXIS));
-            double rotRaw = -(joystick.getRawAxis(TeleopConstants.DRIVE_COMMAND_ROT_AXIS));
-
+            double xRaw = -(joystick.getRawAxis(0));
+            double yRaw = -(joystick.getRawAxis(1));
+            double rotRaw = -(joystick.getRawAxis(4));
             if (joystick.getRawButton(9)) {
                 fieldRelative = !DrivetrainConstants.FIELD_RELATIVE;
-                xRaw = -joystick.getRawAxis(TeleopConstants.DRIVE_COMMAND_X_AXIS);
-                yRaw = -joystick.getRawAxis(TeleopConstants.DRIVE_COMMAND_Y_AXIS);
             }
 
             double xConstrained = MathUtil.applyDeadband(
@@ -59,11 +56,8 @@ public class TeleopDriveCommand extends Command {
                 return;
             }
 
-            if (UserPolicy.twistable) {
-                drive.drive(ySquared, xSquared, rotSquared, fieldRelative, true);
-            } else {
-                drive.drive(ySquared, xSquared, 0, fieldRelative, true);
-            }
+            drive.drive(ySquared, xSquared, rotSquared, fieldRelative, true);
+
         }
 
     }
