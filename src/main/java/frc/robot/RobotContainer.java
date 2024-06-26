@@ -42,7 +42,7 @@ public class RobotContainer {
 
         try {
             pdp = new PowerDistribution(16, ModuleType.kRev);
-            m_autoPositionChooser = AutoBuilder.buildAutoChooser("");
+            m_autoPositionChooser = AutoBuilder.buildAutoChooser("Test Auto");
             Shuffleboard.getTab("Autonomous Selection").add(m_autoPositionChooser);
             Shuffleboard.getTab("Power").add(pdp);
         } catch (Exception e) {
