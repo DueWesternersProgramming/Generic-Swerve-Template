@@ -65,7 +65,7 @@ public class DriveSubsystem extends SubsystemBase {
     private double m_prevTime = WPIUtilJNI.now() * 1e-6;
     private Rotation2d m_trackedRotation = new Rotation2d();
     private SwerveDrivePoseEstimator m_odometry;
-    private double fakeGyro = 45;
+    private double fakeGyro = 0;
     Field2d field = new Field2d();
 
     // temp:
@@ -77,7 +77,6 @@ public class DriveSubsystem extends SubsystemBase {
         if (SubsystemEnabledConstants.DRIVE_SUBSYSTEM_ENABLED) {
 
             if (RobotBase.isSimulation()) {
-
                 // Make simulated swerve modules
                 swerveModuleSims[0] = new SwerveModuleSim(); // Front Left
                 swerveModuleSims[1] = new SwerveModuleSim(); // Front Right
@@ -97,22 +96,22 @@ public class DriveSubsystem extends SubsystemBase {
             } else {
                 // If the code is actually running on the robot, make real swerve module
                 // instances.
-                swerveModules[0] = new SwerveModule(
+                swerveModules[0] = new SwerveModule(// Front Left
                         RobotConstants.PortConstants.CAN.FRONT_LEFT_DRIVING,
                         RobotConstants.PortConstants.CAN.FRONT_LEFT_TURNING,
                         RobotConstants.PortConstants.CAN.FRONT_LEFT_STEERING, false);
 
-                swerveModules[1] = new SwerveModule(
+                swerveModules[1] = new SwerveModule( // Front Right
                         RobotConstants.PortConstants.CAN.FRONT_RIGHT_DRIVING,
                         RobotConstants.PortConstants.CAN.FRONT_RIGHT_TURNING,
                         RobotConstants.PortConstants.CAN.FRONT_RIGHT_STEERING, false);
 
-                swerveModules[2] = new SwerveModule(
+                swerveModules[2] = new SwerveModule( // Rear Left
                         RobotConstants.PortConstants.CAN.REAR_LEFT_DRIVING,
                         RobotConstants.PortConstants.CAN.REAR_LEFT_TURNING,
                         RobotConstants.PortConstants.CAN.REAR_LEFT_STEERING, false);
 
-                swerveModules[3] = new SwerveModule(
+                swerveModules[3] = new SwerveModule( // Rear Right
                         RobotConstants.PortConstants.CAN.REAR_RIGHT_DRIVING,
                         RobotConstants.PortConstants.CAN.REAR_RIGHT_TURNING,
                         RobotConstants.PortConstants.CAN.REAR_RIGHT_STEERING, false);
@@ -204,11 +203,13 @@ public class DriveSubsystem extends SubsystemBase {
         }
 
         else {
+
             SmartDashboard.putNumber("Fake Gyro value:", getGyroAngle());
-            SmartDashboard.putNumber("hehe", m_currentRotation);
             SmartDashboard.putData("Odometry Pose Field", field);
-            publisher.set(new SwerveModuleState[] { swerveModuleSims[0].getState(), swerveModuleSims[1].getState(),
-                    swerveModuleSims[2].getState(), swerveModuleSims[3].getState() });
+
+            // publisher.set(new SwerveModuleState[] { swerveModuleSims[0].getState(),
+            // swerveModuleSims[1].getState(),
+            // swerveModuleSims[2].getState(), swerveModuleSims[3].getState() });
 
         }
     }
