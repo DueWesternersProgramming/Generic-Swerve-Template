@@ -8,7 +8,7 @@ import frc.robot.RobotConstants.TeleopConstants;
 import frc.robot.RobotConstants.DrivetrainConstants;
 import frc.robot.RobotConstants.SubsystemEnabledConstants;
 import frc.robot.RobotContainer.UserPolicy;
-import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.drive.DriveSubsystem;
 
 public class TeleopDriveCommand extends Command {
     private final DriveSubsystem drive;

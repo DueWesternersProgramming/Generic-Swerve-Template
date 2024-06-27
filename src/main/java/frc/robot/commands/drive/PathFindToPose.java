@@ -6,9 +6,9 @@ import com.pathplanner.lib.path.PathConstraints;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.utils;
 import frc.robot.RobotConstants.PathFindingOnFlyConstants;
-import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.drive.DriveSubsystem;
+import frc.robot.utils.CowboyUtils;
 
 public class PathFindToPose {
     DriveSubsystem driveSubsystem;
@@ -31,7 +31,7 @@ public class PathFindToPose {
 
     public static Command alignWithSpeakerCommand() {
         System.out.println("here we go");
-        return pathToPoseCommand(utils.testPose);
+        return pathToPoseCommand(CowboyUtils.testPose);
     }
 
 }

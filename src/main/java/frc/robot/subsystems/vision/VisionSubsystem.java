@@ -1,7 +1,5 @@
-package frc.robot.subsystems;
+package frc.robot.subsystems.vision;
 
-import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
@@ -10,6 +8,9 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotConstants.SubsystemEnabledConstants;
+import frc.robot.subsystems.drive.swerve.SwerveModule;
+import frc.robot.utils.CowboyUtils;
+
 import java.util.Optional;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
@@ -23,22 +24,23 @@ public class VisionSubsystem extends SubsystemBase {
     public static PhotonCamera frontLeftCamera;
     public static PhotonCamera frontRightCamera;
 
-    static AprilTagFieldLayout aprilTagFieldLayout;
-
     public static PhotonPoseEstimator frontLeftPoseEstimator;
     public static PhotonPoseEstimator frontRightPoseEstimator;
 
+    private Camera[] cameras = new Camera[2];
+
     public VisionSubsystem() {
         if (SubsystemEnabledConstants.VISION_SUBSYSTEM_ENABLED) {
-            aprilTagFieldLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
 
             // Create as many camera instances (photonvision) as cameras you have
+
+            cameras[0] = new Camera("frontLeftCamera", new Transform3d(0, 0, 0, new Rotation3d()));
 
             frontLeftCamera = new PhotonCamera("frontLeftCamera");
             frontRightCamera = new PhotonCamera("frontRightCamera");
 
             frontLeftPoseEstimator = new PhotonPoseEstimator(
-                    aprilTagFieldLayout,
+                    CowboyUtils.aprilTagFieldLayout,
                     PoseStrategy.LOWEST_AMBIGUITY,
                     frontLeftCamera,
                     new Transform3d(new Translation3d(
@@ -48,7 +50,7 @@ public class VisionSubsystem extends SubsystemBase {
                             new Rotation3d()));
 
             frontRightPoseEstimator = new PhotonPoseEstimator(
-                    aprilTagFieldLayout,
+                    CowboyUtils.aprilTagFieldLayout,
                     PoseStrategy.LOWEST_AMBIGUITY,
                     frontRightCamera,
                     new Transform3d(new Translation3d(

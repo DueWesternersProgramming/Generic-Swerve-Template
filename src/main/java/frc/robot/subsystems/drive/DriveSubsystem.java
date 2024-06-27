@@ -1,4 +1,4 @@
-package frc.robot.subsystems;
+package frc.robot.subsystems.drive;
 
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -24,14 +24,15 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotConstants;
-import frc.robot.utils;
+import frc.robot.utils.CowboyUtils;
 import frc.robot.RobotConstants.DrivetrainConstants;
 import frc.robot.RobotConstants.SubsystemEnabledConstants;
 import frc.robot.RobotContainer.UserPolicy;
+import frc.robot.subsystems.drive.swerve.SwerveModule;
+import frc.robot.subsystems.drive.swerve.SwerveModuleSim;
+import frc.robot.subsystems.vision.VisionSubsystem;
 import frc.robot.RobotConstants.AutonomousConstants;
-import frc.robot.swerve.SwerveModule;
-import frc.robot.swerve.SwerveModuleSim;
-import frc.robot.swerve.SwerveUtils;
+import frc.robot.utils.SwerveUtils;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
@@ -374,7 +375,7 @@ public class DriveSubsystem extends SubsystemBase {
 
             Rotation2d rotation = Rotation2d.fromDegrees(
                     getGyroAngle()
-                            + (utils.isRedAlliance() ? 180 : 0));
+                            + (CowboyUtils.isRedAlliance() ? 180 : 0));
             var swerveModuleStates = DrivetrainConstants.DRIVE_KINEMATICS.toSwerveModuleStates(
                     fieldRelative
                             ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered,
