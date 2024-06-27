@@ -6,6 +6,9 @@ package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
@@ -14,9 +17,8 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import frc.robot.commands.AlignWithSpeakerCommand;
 import frc.robot.commands.RobotSystemsCheckCommand;
-import frc.robot.commands.drive.MoveAtPowerCommand;
+import frc.robot.commands.drive.PathFindToPose;
 import frc.robot.commands.drive.TeleopDriveCommand;
 import frc.robot.subsystems.DriveSubsystem;
 
@@ -52,12 +54,14 @@ public class RobotContainer {
 
     private void createNamedCommands() {
         // Add commands here to be able to execute in auto through pathplanner
-        NamedCommands.registerCommand("AlignWithSpeakerCommand", new AlignWithSpeakerCommand(driveSubsystem));
+        // NamedCommands.registerCommand("AlignWithSpeakerCommand", new
+        // PathFindToPose(driveSubsystem));
     }
 
     private void configureButtonBindings() {
         new JoystickButton(driveJoystick, 3).onTrue((driveSubsystem.xCommand()));
-
+        new JoystickButton(driveJoystick, 1)
+                .whileTrue(PathFindToPose.alignWithSpeakerCommand());
         // Above = DriveJoystick, Below = OperatorJoystick
 
     }

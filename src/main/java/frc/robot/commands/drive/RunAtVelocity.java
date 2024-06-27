@@ -5,13 +5,13 @@ import frc.robot.RobotConstants.DrivetrainConstants;
 import frc.robot.RobotConstants.SubsystemEnabledConstants;
 import frc.robot.subsystems.DriveSubsystem;
 
-public class MoveAtPowerCommand extends Command {
+public class RunAtVelocity extends Command {
     private final DriveSubsystem drive;
     private final double x;
     private final double y;
     private final double rot;
 
-    public MoveAtPowerCommand(DriveSubsystem drive, double x, double y, double rot) {
+    public RunAtVelocity(DriveSubsystem drive, double x, double y, double rot) {
         this.x = x;
         this.y = y;
         this.rot = rot;

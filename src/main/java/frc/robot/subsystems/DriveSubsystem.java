@@ -56,7 +56,7 @@ public class DriveSubsystem extends SubsystemBase {
     private SlewRateLimiter m_rotLimiter = new SlewRateLimiter(DrivetrainConstants.ROTATIONAL_SLEW_RATE);
     private double m_prevTime = WPIUtilJNI.now() * 1e-6;
     private Rotation2d m_trackedRotation = new Rotation2d();
-    private SwerveDrivePoseEstimator m_odometry;
+    private static SwerveDrivePoseEstimator m_odometry;
     private double fakeGyro = 0;
     Field2d field = new Field2d();
 
@@ -270,7 +270,7 @@ public class DriveSubsystem extends SubsystemBase {
         }
     }
 
-    public Optional<Pose2d> getPose() {
+    public static Optional<Pose2d> getPose() {
         return SubsystemEnabledConstants.DRIVE_SUBSYSTEM_ENABLED ? Optional.of(m_odometry.getEstimatedPosition())
                 : Optional.empty();
     }

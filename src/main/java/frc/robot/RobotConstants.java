@@ -160,6 +160,14 @@ public final class RobotConstants {
 
         public static final double FIELD_LENGTH_INCHES = 54 * 12 + 1; // 54ft 1in
         public static final double FIELD_WIDTH_INCHES = 26 * 12 + 7; // 26ft 7in
+
+    }
+
+    public static final class PathFindingOnFlyConstants {
+        public static final double MAX_VELOCITY = 6.0; // Meters per second
+        public static final double MAX_ACCELERATION = 6.0; // Meters per second squared
+        public static final double MAX_ANGULAR_SPEED = 540.0; // Degrees per second
+        public static final double MAX_ANGULAR_ACCELERATION = 720.0; // Degrees per second squared
     }
 
     public static final class VisionConstants {
