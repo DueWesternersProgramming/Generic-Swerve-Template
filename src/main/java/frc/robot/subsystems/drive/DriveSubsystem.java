@@ -194,6 +194,7 @@ public class DriveSubsystem extends SubsystemBase {
                     swerveModules[3].getTurningAbsoluteEncoder().getPosition()
             });
             SmartDashboard.putData("NAVX", m_gyro);
+
         }
 
         else {
@@ -201,9 +202,12 @@ public class DriveSubsystem extends SubsystemBase {
             SmartDashboard.putNumber("Fake Gyro value:", getGyroAngle());
             SmartDashboard.putData("Odometry Pose Field", field);
 
-            // publisher.set(new SwerveModuleState[] { swerveModuleSims[0].getState(),
-            // swerveModuleSims[1].getState(),
-            // swerveModuleSims[2].getState(), swerveModuleSims[3].getState() });
+            // SmartDashboard.putData("Debugging field",
+            // VisionSubsystem.visionSim.getDebugField());
+
+            publisher.set(new SwerveModuleState[] { swerveModuleSims[0].getState(),
+                    swerveModuleSims[1].getState(),
+                    swerveModuleSims[2].getState(), swerveModuleSims[3].getState() });
 
         }
     }

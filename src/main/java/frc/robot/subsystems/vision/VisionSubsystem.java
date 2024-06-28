@@ -15,8 +15,8 @@ import org.photonvision.simulation.VisionSystemSim;
 
 public class VisionSubsystem extends SubsystemBase {
 
-    private static Camera[] cameras = new Camera[2];
-    private static CameraSim[] cameraSims = new CameraSim[2];
+    public static Camera[] cameras = new Camera[2];
+    public static CameraSim[] cameraSims = new CameraSim[2];
     private String[] cameraNames = { "frontLeftCamera", "frontRightCamera" };
 
     // TODO move this to
@@ -24,7 +24,7 @@ public class VisionSubsystem extends SubsystemBase {
     private Transform3d[] cameraPositions = { new Transform3d(0, 0, 0, new Rotation3d()),
             new Transform3d(0, 0, 0, new Rotation3d()) };
 
-    private static VisionSystemSim visionSim;
+    public static VisionSystemSim visionSim;
 
     public VisionSubsystem() {
         if (SubsystemEnabledConstants.VISION_SUBSYSTEM_ENABLED) {

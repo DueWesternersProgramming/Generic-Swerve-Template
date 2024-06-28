@@ -25,9 +25,12 @@
     "types": {
       "/FMSInfo": "FMSInfo",
       "/Shuffleboard/Autonomous Selection/SendableChooser[1]": "String Chooser",
+      "/SmartDashboard/Debugging field!": "Field2d",
+      "/SmartDashboard/Field": "Field2d",
       "/SmartDashboard/NAVX": "Gyro",
       "/SmartDashboard/Odometry Pose Field": "Field2d",
-      "/SmartDashboard/VisionSystemSim-main/Sim Field": "Field2d"
+      "/SmartDashboard/VisionSystemSim-main/Sim Field": "Field2d",
+      "/SmartDashboard/test mechanism": "Mechanism2d"
     }
   },
   "NetworkTables": {
