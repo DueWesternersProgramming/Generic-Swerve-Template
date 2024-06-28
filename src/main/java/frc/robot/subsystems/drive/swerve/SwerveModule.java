@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.swerve;
+package frc.robot.subsystems.drive.swerve;
 
 import com.revrobotics.CANSparkMax;
 
@@ -12,6 +12,9 @@ import com.revrobotics.SparkPIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.simulation.EncoderSim;
+import edu.wpi.first.wpilibj.simulation.SimDeviceSim;
 import frc.robot.RobotConstants.SwerveModuleConstants;
 import frc.robot.sensors.CanCoder;
 
@@ -29,7 +32,6 @@ public class SwerveModule {
 
         private final SparkPIDController m_drivingPIDController;
         private final SparkPIDController m_turningPIDController;
-
         private SwerveModuleState m_desiredState = new SwerveModuleState(0.0, new Rotation2d());
 
         /**

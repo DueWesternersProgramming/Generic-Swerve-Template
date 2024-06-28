@@ -6,6 +6,7 @@ package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
@@ -14,14 +15,19 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import frc.robot.commands.AlignWithSpeakerCommand;
 import frc.robot.commands.RobotSystemsCheckCommand;
+import frc.robot.commands.drive.PathFindToPose;
+import frc.robot.commands.drive.RunAtVelocity;
 import frc.robot.commands.drive.TeleopDriveCommand;
-import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.drive.DriveSubsystem;
+import frc.robot.subsystems.example.ExampleSubsystem;
+import frc.robot.subsystems.vision.VisionSubsystem;
 
 public class RobotContainer {
 
     public final DriveSubsystem driveSubsystem = new DriveSubsystem();
+    public final VisionSubsystem visionSubsystem = new VisionSubsystem();
+    public final ExampleSubsystem exampleSubsystem = new ExampleSubsystem();
 
     private final Joystick driveJoystick = new Joystick(RobotConstants.PortConstants.Controller.DRIVE_JOYSTICK);
     private final Joystick operatorJoystick = new Joystick(RobotConstants.PortConstants.Controller.OPERATOR_JOYSTICK);
@@ -41,7 +47,7 @@ public class RobotContainer {
 
         try {
             pdp = new PowerDistribution(16, ModuleType.kRev);
-            m_autoPositionChooser = AutoBuilder.buildAutoChooser("");
+            m_autoPositionChooser = AutoBuilder.buildAutoChooser("Test Auto");
             Shuffleboard.getTab("Autonomous Selection").add(m_autoPositionChooser);
             Shuffleboard.getTab("Power").add(pdp);
         } catch (Exception e) {
@@ -51,13 +57,14 @@ public class RobotContainer {
 
     private void createNamedCommands() {
         // Add commands here to be able to execute in auto through pathplanner
-        NamedCommands.registerCommand("AlignWithSpeakerCommand", new AlignWithSpeakerCommand(driveSubsystem));
+
+        NamedCommands.registerCommand("Example", new RunAtVelocity(driveSubsystem, 0, 0, 0));
     }
 
     private void configureButtonBindings() {
-        new JoystickButton(driveJoystick, 1).whileTrue(driveSubsystem.TwistCommand());
-        new JoystickButton(driveJoystick, 11).onTrue(driveSubsystem.gyroReset());
         new JoystickButton(driveJoystick, 3).onTrue((driveSubsystem.xCommand()));
+        new JoystickButton(driveJoystick, 1)
+                .whileTrue(PathFindToPose.alignWithSpeakerCommand());
 
         // Above = DriveJoystick, Below = OperatorJoystick
 
@@ -80,7 +87,6 @@ public class RobotContainer {
     }
 
     public final class UserPolicy {
-        public static boolean twistable = false;
         public static boolean xLocked = false;
     }
 }
