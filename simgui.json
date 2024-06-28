@@ -10,6 +10,9 @@
         "header": {
           "open": true
         }
+      },
+      "window": {
+        "visible": false
       }
     },
     "Timing": {
@@ -23,7 +26,8 @@
       "/FMSInfo": "FMSInfo",
       "/Shuffleboard/Autonomous Selection/SendableChooser[1]": "String Chooser",
       "/SmartDashboard/NAVX": "Gyro",
-      "/SmartDashboard/Odometry Pose Field": "Field2d"
+      "/SmartDashboard/Odometry Pose Field": "Field2d",
+      "/SmartDashboard/VisionSystemSim-main/Sim Field": "Field2d"
     }
   },
   "NetworkTables": {
@@ -57,13 +61,18 @@
   },
   "NetworkTables Info": {
     "AdvantageScope@1": {
+      "Subscribers": {
+        "open": true
+      },
       "open": true
     },
     "Clients": {
       "open": true
     },
     "Server": {
-      "open": true
+      "Subscribers": {
+        "open": true
+      }
     },
     "visible": true
   },

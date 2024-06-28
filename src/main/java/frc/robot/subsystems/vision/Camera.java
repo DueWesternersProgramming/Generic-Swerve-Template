@@ -14,11 +14,11 @@ import frc.robot.utils.CowboyUtils;
 import java.util.Optional;
 
 public class Camera {
-    public static PhotonCamera photonCamera;
-    public static PhotonPoseEstimator photonPoseEstimator;
+    public PhotonCamera photonCamera;
+    public PhotonPoseEstimator photonPoseEstimator;
 
     public Camera(String cameraName, Transform3d positionTransform3d) {
-        photonCamera = new PhotonCamera("frontRightCamera");
+        photonCamera = new PhotonCamera(cameraName);
 
         photonPoseEstimator = new PhotonPoseEstimator(
                 CowboyUtils.aprilTagFieldLayout,

@@ -7,8 +7,6 @@ package frc.robot;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
@@ -21,10 +19,12 @@ import frc.robot.commands.RobotSystemsCheckCommand;
 import frc.robot.commands.drive.PathFindToPose;
 import frc.robot.commands.drive.TeleopDriveCommand;
 import frc.robot.subsystems.drive.DriveSubsystem;
+import frc.robot.subsystems.vision.VisionSubsystem;
 
 public class RobotContainer {
 
     public final DriveSubsystem driveSubsystem = new DriveSubsystem();
+    public final VisionSubsystem visionSubsystem = new VisionSubsystem();
 
     private final Joystick driveJoystick = new Joystick(RobotConstants.PortConstants.Controller.DRIVE_JOYSTICK);
     private final Joystick operatorJoystick = new Joystick(RobotConstants.PortConstants.Controller.OPERATOR_JOYSTICK);
