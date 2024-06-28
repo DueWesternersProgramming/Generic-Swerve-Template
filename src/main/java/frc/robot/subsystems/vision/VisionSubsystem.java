@@ -3,126 +3,43 @@ package frc.robot.subsystems.vision;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.geometry.Translation3d;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotConstants.SubsystemEnabledConstants;
-import frc.robot.subsystems.drive.swerve.SwerveModule;
-import frc.robot.utils.CowboyUtils;
+import frc.robot.subsystems.drive.DriveSubsystem;
 
-import java.util.Optional;
-import org.photonvision.EstimatedRobotPose;
-import org.photonvision.PhotonCamera;
-import org.photonvision.PhotonPoseEstimator;
-import org.photonvision.PhotonPoseEstimator.PoseStrategy;
-import org.photonvision.targeting.PhotonPipelineResult;
-import org.photonvision.targeting.PhotonTrackedTarget;
+import java.util.NoSuchElementException;
 
 public class VisionSubsystem extends SubsystemBase {
 
-    public static PhotonCamera frontLeftCamera;
-    public static PhotonCamera frontRightCamera;
-
-    public static PhotonPoseEstimator frontLeftPoseEstimator;
-    public static PhotonPoseEstimator frontRightPoseEstimator;
-
-    private Camera[] cameras = new Camera[2];
+    private static Camera[] cameras = new Camera[2];
+    private String[] cameraNames = { "frontLeftCamera", "frontRightCamera" };
 
     public VisionSubsystem() {
         if (SubsystemEnabledConstants.VISION_SUBSYSTEM_ENABLED) {
 
-            // Create as many camera instances (photonvision) as cameras you have
+            // Create as many camera instances as you have
 
-            cameras[0] = new Camera("frontLeftCamera", new Transform3d(0, 0, 0, new Rotation3d()));
-
-            frontLeftCamera = new PhotonCamera("frontLeftCamera");
-            frontRightCamera = new PhotonCamera("frontRightCamera");
-
-            frontLeftPoseEstimator = new PhotonPoseEstimator(
-                    CowboyUtils.aprilTagFieldLayout,
-                    PoseStrategy.LOWEST_AMBIGUITY,
-                    frontLeftCamera,
-                    new Transform3d(new Translation3d(
-                            Units.inchesToMeters(0),
-                            Units.inchesToMeters(0),
-                            Units.inchesToMeters(0)),
-                            new Rotation3d()));
-
-            frontRightPoseEstimator = new PhotonPoseEstimator(
-                    CowboyUtils.aprilTagFieldLayout,
-                    PoseStrategy.LOWEST_AMBIGUITY,
-                    frontRightCamera,
-                    new Transform3d(new Translation3d(
-                            Units.inchesToMeters(0),
-                            Units.inchesToMeters(0), // positioning relitive to center of the robot, on the floor. Use
-                                                     // CAD mesurements ;)
-                            Units.inchesToMeters(0)),
-                            new Rotation3d()));
-
+            cameras[0] = new Camera(cameraNames[0], new Transform3d(0, 0, 0, new Rotation3d())); // Front Left
+            cameras[0] = new Camera(cameraNames[0], new Transform3d(0, 0, 0, new Rotation3d())); // Front Right
         }
     }
 
-    public void setPipeline(PhotonCamera camera, int index) {
-        if (SubsystemEnabledConstants.VISION_SUBSYSTEM_ENABLED) {
-            camera.setPipelineIndex(index);
-        }
+    public static Pose2d getVisionPose(int i) throws NoSuchElementException {
+
+        return cameras[i].getEstimatedGlobalPose(DriveSubsystem.getPose().orElseThrow()).orElseThrow().estimatedPose
+                .toPose2d();
+
     }
 
-    public PhotonPipelineResult getResult(PhotonCamera camera) {
-        if (SubsystemEnabledConstants.VISION_SUBSYSTEM_ENABLED) {
-            return camera.getLatestResult();
-        } else {
-            return null;
-        }
-    }
-
-    public boolean isCameraConnected(PhotonCamera camera) {
-        if (SubsystemEnabledConstants.VISION_SUBSYSTEM_ENABLED) {
-            return camera.isConnected();
-        } else {
-            return false;
-        }
-    }
-
-    public boolean hasResults(PhotonCamera camera) {
-        if (SubsystemEnabledConstants.VISION_SUBSYSTEM_ENABLED) {
-            return camera.getLatestResult().hasTargets();
-        } else {
-            return false;
-        }
-    }
-
-    public PhotonTrackedTarget getBestTarget(PhotonCamera camera) {
-        if (SubsystemEnabledConstants.VISION_SUBSYSTEM_ENABLED) {
-            return getResult(camera).getBestTarget();
-        } else {
-            return null;
-        }
-    }
-
-    public double getTargetYaw(PhotonCamera camera) {
-        if (SubsystemEnabledConstants.VISION_SUBSYSTEM_ENABLED) {
-            return getBestTarget(camera).getYaw();
-        } else {
-            return 0;
-        }
-    }
-
-    public static Optional<EstimatedRobotPose> getEstimatedGlobalPose(PhotonPoseEstimator estimator,
-            PhotonCamera camera, Pose2d prevEstimatedRobotPose) {
-        if (SubsystemEnabledConstants.VISION_SUBSYSTEM_ENABLED) {
-            estimator.setReferencePose(prevEstimatedRobotPose);
-            return estimator.update();
-        } else {
-            return null;
-        }
+    public static int getLengthOfCameraList() {
+        return cameras.length;
     }
 
     @Override
     public void periodic() {
         if (SubsystemEnabledConstants.VISION_SUBSYSTEM_ENABLED) {
-            SmartDashboard.putBoolean("Has a tracked object:", hasResults(frontLeftCamera));
+            SmartDashboard.putBoolean("Has a tracked object:", cameras[0].hasResults());
         }
     }
 }

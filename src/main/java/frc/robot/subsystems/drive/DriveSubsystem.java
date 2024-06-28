@@ -239,35 +239,26 @@ public class DriveSubsystem extends SubsystemBase {
         field.setRobotPose(m_odometry.getEstimatedPosition());
     }
 
+    private void updateVisionMeasurements() {
+        for (int i = 0; i < VisionSubsystem.getLengthOfCameraList(); i++) {
+            try {
+                m_odometry.addVisionMeasurement(VisionSubsystem.getVisionPose(i), Timer.getFPGATimestamp());
+            } catch (NoSuchElementException e) {
+
+            }
+        }
+    }
+
     @Override
     public void periodic() {
         if (SubsystemEnabledConstants.DRIVE_SUBSYSTEM_ENABLED) {
             updateOdometry();
             putSmartDashboardData();
         }
-        // Vision pose estimates are added into the main odometry filter.
+        // Vision pose estimates are added into the main odometry filter if vision
+        // subsystem is enabled.
         if (SubsystemEnabledConstants.VISION_SUBSYSTEM_ENABLED) {
-            try {
-                m_odometry.addVisionMeasurement(
-                        VisionSubsystem
-                                .getEstimatedGlobalPose(VisionSubsystem.frontLeftPoseEstimator,
-                                        VisionSubsystem.frontLeftCamera, getPose().orElseThrow())
-                                .orElseThrow().estimatedPose.toPose2d(),
-                        Timer.getFPGATimestamp());
-
-            } catch (NoSuchElementException e) {
-            }
-
-            try {
-                m_odometry.addVisionMeasurement(
-                        VisionSubsystem
-                                .getEstimatedGlobalPose(VisionSubsystem.frontRightPoseEstimator,
-                                        VisionSubsystem.frontRightCamera, getPose().orElseThrow())
-                                .orElseThrow().estimatedPose.toPose2d(),
-                        Timer.getFPGATimestamp());
-            } catch (NoSuchElementException i) {
-            }
-
+            updateVisionMeasurements();
         }
     }
 

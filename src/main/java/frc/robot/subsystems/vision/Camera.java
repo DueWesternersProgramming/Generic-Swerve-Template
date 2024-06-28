@@ -73,7 +73,7 @@ public class Camera {
         }
     }
 
-    public static Optional<EstimatedRobotPose> getEstimatedGlobalPose(Pose2d prevEstimatedRobotPose) {
+    public Optional<EstimatedRobotPose> getEstimatedGlobalPose(Pose2d prevEstimatedRobotPose) {
         if (SubsystemEnabledConstants.VISION_SUBSYSTEM_ENABLED) {
             photonPoseEstimator.setReferencePose(prevEstimatedRobotPose);
             return photonPoseEstimator.update();

@@ -30,7 +30,6 @@ public class PathFindToPose {
     }
 
     public static Command alignWithSpeakerCommand() {
-        System.out.println("here we go");
         return pathToPoseCommand(CowboyUtils.testPose);
     }
 
