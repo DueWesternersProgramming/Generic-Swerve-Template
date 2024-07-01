@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj.SPI.Port;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
 import frc.robot.RobotConstants;
@@ -132,20 +133,7 @@ public class DriveSubsystem extends SubsystemBase {
                 this::resetOdometry, // Method to reset odometry (will be called if your auto has a starting pose)
                 this::getChassisSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
                 this::pathFollowDrive,
-                new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your
-                                                 // Constants class
-                        new PIDConstants(AutonomousConstants.X_CONTROLLER_P, AutonomousConstants.X_CONTROLLER_I,
-                                AutonomousConstants.X_CONTROLLER_D), // Translation PID constants
-                        new PIDConstants(AutonomousConstants.THETA_CONTROLLER_P,
-                                AutonomousConstants.THETA_CONTROLLER_I, AutonomousConstants.THETA_CONTROLLER_D), // Rotation
-
-                        RobotConstants.DrivetrainConstants.MAX_SPEED_METERS_PER_SECOND, // Max module speed, in m/s
-                        RobotConstants.DrivetrainConstants.DRIVE_BASE_RADIUS_METERS, // Drive base radius in meters.
-                                                                                     // Distance from robot center
-                                                                                     // to furthest module.
-                        new ReplanningConfig(false, false) // Default path replanning config. See the API for the
-                                                           // options here
-                ),
+                AutonomousConstants.HOLONOMIC_PATH_FOLLOWER_CONFIG,
                 () -> {
                     return AutonomousConstants.FLIP_PATHPLANNER_AUTOS;
                 },
@@ -448,7 +436,7 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     /**
-     * Resets the drive encoders to currently read a position of 0 and seeds the
+     * Resets the drive encoders to currently read a position of 0 and sets the
      * turn encoders using the absolute encoders.
      */
     public void resetEncoders() {
@@ -479,9 +467,8 @@ public class DriveSubsystem extends SubsystemBase {
      */
     public Double getHeading() {
         return SubsystemEnabledConstants.DRIVE_SUBSYSTEM_ENABLED // if this is true
-                ? (Rotation2d.fromDegrees(DrivetrainConstants.GYRO_ORIENTATION * getGyroAngle()).getDegrees()) // do
-                                                                                                               // this
-                : 0; // else
+                ? (Rotation2d.fromDegrees(DrivetrainConstants.GYRO_ORIENTATION * getGyroAngle()).getDegrees())
+                : 0;
     }
 
     public Optional<SwerveModule> getFrontLeftModule() {
@@ -500,12 +487,6 @@ public class DriveSubsystem extends SubsystemBase {
         return SubsystemEnabledConstants.DRIVE_SUBSYSTEM_ENABLED ? Optional.of(swerveModules[3]) : Optional.empty();
     }
 
-    // public Optional<AHRS> getImu() {
-    // return SubsystemEnabledConstants.DRIVE_SUBSYSTEM_ENABLED &&
-    // RobotBase.isReal() ? Optional.of(m_gyro)
-    // : Optional.empty();
-    // }
-
     private void pathFollowDrive(ChassisSpeeds speeds) {
         SwerveModuleState[] swerveModuleStates = DrivetrainConstants.DRIVE_KINEMATICS.toSwerveModuleStates(speeds);
         setModuleStates(swerveModuleStates);
@@ -521,19 +502,24 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     public Command gyroReset() {
-        return run(() -> {
+        return Commands.startEnd(() -> {
             // init
             if (RobotBase.isReal()) {
                 zeroHeading();
             }
+        }, () -> {
+            // end
         });
     }
 
     public Command xCommand() {
-        return run(() -> {
+        return Commands.startEnd(() -> {
             // init
             UserPolicy.xLocked = !UserPolicy.xLocked;
+        }, () -> {
+            // end
         });
+
     }
 
 }

@@ -21,8 +21,8 @@ public class ExampleSubsystem extends SubsystemBase {
         } else {
             arm = new Mechanism2d(4, 4); // Max reachable area
             root = arm.getRoot("base", 2, 0);
-            joint1 = root.append(new MechanismLigament2d("joint1", 1, 70));
-            joint2 = joint1.append(new MechanismLigament2d("joint2", 2, -70));
+            joint1 = root.append(new MechanismLigament2d("joint1", 1, 20 + 90));
+            joint2 = joint1.append(new MechanismLigament2d("joint2", 0.5, -10 + 90));
             // An example to show how this could be done
 
         }

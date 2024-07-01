@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.RobotConstants;
 import frc.robot.RobotConstants.TeleopConstants;
+import frc.robot.RobotConstants.PortConstants.Controller;
 import frc.robot.RobotConstants.DrivetrainConstants;
 import frc.robot.RobotConstants.SubsystemEnabledConstants;
 import frc.robot.RobotContainer.UserPolicy;
@@ -30,9 +31,9 @@ public class TeleopDriveCommand extends Command {
         if (SubsystemEnabledConstants.DRIVE_SUBSYSTEM_ENABLED) {
             boolean fieldRelative = DrivetrainConstants.FIELD_RELATIVE;
 
-            double xRaw = -(joystick.getRawAxis(0));
-            double yRaw = -(joystick.getRawAxis(1));
-            double rotRaw = -(joystick.getRawAxis(4));
+            double xRaw = -(joystick.getRawAxis(Controller.DRIVE_COMMAND_X_AXIS));
+            double yRaw = -(joystick.getRawAxis(Controller.DRIVE_COMMAND_Y_AXIS));
+            double rotRaw = -(joystick.getRawAxis(Controller.DRIVE_COMMAND_ROT_AXIS));
             if (joystick.getRawButton(9)) {
                 fieldRelative = !DrivetrainConstants.FIELD_RELATIVE;
             }
