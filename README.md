@@ -1,4 +1,4 @@
-This repo is created by the software subteam of FRC team 8575 to use in the future if we chose to use a swerve drive train again and is also avalible to other teams to use as a template to copy and use as well.
+This repo is created by the software subteam of FRC team 8575 to use in the future if we chose to use a swerve drive train again, and is also avalible to other teams to use as a template to copy and use as well.
 
 Info:
 -We have tried and tested this code on a robot running regular Neos and Spark Maxes with SDS MK4i Swerve Modules.
