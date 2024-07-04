@@ -31,7 +31,8 @@ public class VisionSubsystem extends SubsystemBase {
 
             new Rotation3d(
                     Units.degreesToRadians(0),
-                    Units.degreesToRadians(-40),
+                    Units.degreesToRadians(-40), // Note, these are all counter clockwise so to face up we need
+                    // -40 ;)
                     Units.degreesToRadians(180 - 15))),
 
             new Transform3d(new Translation3d(
@@ -40,7 +41,8 @@ public class VisionSubsystem extends SubsystemBase {
                     Units.inchesToMeters(9)), // up+
                     new Rotation3d(
                             Units.degreesToRadians(0),
-                            Units.degreesToRadians(-40),
+                            Units.degreesToRadians(-40), // Note, these are all counter clockwise so to face up we need
+                                                         // -40 ;)
                             Units.degreesToRadians(180 + 15))) };
 
     public static VisionSystemSim visionSim;
