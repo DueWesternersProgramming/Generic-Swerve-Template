@@ -18,8 +18,10 @@ public class CameraSim {
     private SimCameraProperties cameraProp;
     public PhotonCameraSim photonCameraSim;
     private PhotonPoseEstimator photonPoseEstimator;
+    public PhotonCamera camera;
 
-    public CameraSim(PhotonCamera camera, Transform3d positionTransform3d) {
+    public CameraSim(String cameraName, Transform3d positionTransform3d) {
+        camera = new PhotonCamera(cameraName);
         cameraProp = new SimCameraProperties();
         setCameraProperties();
         photonCameraSim = new PhotonCameraSim(camera, cameraProp);

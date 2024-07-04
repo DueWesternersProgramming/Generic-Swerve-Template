@@ -6,7 +6,7 @@ import com.pathplanner.lib.path.PathConstraints;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.RobotConstants.PathFindingOnFlyConstants;
+import frc.robot.RobotConstants.PathPlannerConstants;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.utils.CowboyUtils;
 
@@ -16,9 +16,9 @@ public class PathFindToPose {
 
     // Create the constraints to use while pathfinding (Speeds and acceleration)
     static PathConstraints constraints = new PathConstraints(
-            PathFindingOnFlyConstants.MAX_VELOCITY, PathFindingOnFlyConstants.MAX_ACCELERATION,
-            Units.degreesToRadians(PathFindingOnFlyConstants.MAX_ANGULAR_SPEED),
-            Units.degreesToRadians(PathFindingOnFlyConstants.MAX_ANGULAR_ACCELERATION));
+            PathPlannerConstants.MAX_VELOCITY, PathPlannerConstants.MAX_ACCELERATION,
+            Units.degreesToRadians(PathPlannerConstants.MAX_ANGULAR_SPEED),
+            Units.degreesToRadians(PathPlannerConstants.MAX_ANGULAR_ACCELERATION));
 
     public static Command pathToPoseCommand(Pose2d target) {
         pathfindingCommand = AutoBuilder.pathfindToPose(

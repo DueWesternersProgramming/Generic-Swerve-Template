@@ -1,14 +1,10 @@
 package frc.robot.subsystems.vision;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.geometry.Translation3d;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotConstants.SubsystemEnabledConstants;
+import frc.robot.RobotConstants.VisionConstants;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.utils.CowboyUtils;
 import java.util.NoSuchElementException;
@@ -20,40 +16,10 @@ public class VisionSubsystem extends SubsystemBase {
     public static Camera[] cameras = new Camera[2];
     public static CameraSim[] cameraSims = new CameraSim[2];
     private String[] cameraNames = { "backLeftCamera", "backRightCamera" };
-
-    // TODO move this to
-    // constants
-    private Transform3d[] cameraPositions = { new Transform3d(
-            new Translation3d(
-                    Units.inchesToMeters(-13.5), // forward+
-                    Units.inchesToMeters(12.75), // left+
-                    Units.inchesToMeters(9)), // up+
-
-            new Rotation3d(
-                    Units.degreesToRadians(0),
-                    Units.degreesToRadians(-40), // Note, these are all counter clockwise so to face up we need
-                    // -40 ;)
-                    Units.degreesToRadians(180 - 15))),
-
-            new Transform3d(new Translation3d(
-                    Units.inchesToMeters(-13.5), // forward+
-                    Units.inchesToMeters(-12.75), // left+
-                    Units.inchesToMeters(9)), // up+
-                    new Rotation3d(
-                            Units.degreesToRadians(0),
-                            Units.degreesToRadians(-40), // Note, these are all counter clockwise so to face up we need
-                                                         // -40 ;)
-                            Units.degreesToRadians(180 + 15))) };
-
     public static VisionSystemSim visionSim;
 
     public VisionSubsystem() {
         if (SubsystemEnabledConstants.VISION_SUBSYSTEM_ENABLED) {
-
-            // Create as many camera instances as you have in the array cameraNames
-            for (int i = 0; i < cameraNames.length; i++) {
-                cameras[i] = new Camera(cameraNames[i], cameraPositions[i]);
-            }
 
             if (RobotBase.isSimulation()) {
                 visionSim = new VisionSystemSim("main");
@@ -62,10 +28,15 @@ public class VisionSubsystem extends SubsystemBase {
                 visionSim.clearCameras();
 
                 for (int i = 0; i < cameraNames.length; i++) {
-                    cameraSims[i] = new CameraSim(cameras[i].photonCamera, cameraPositions[i]);
-                    visionSim.addCamera(cameraSims[i].photonCameraSim, cameraPositions[i]);
+                    cameraSims[i] = new CameraSim(cameraNames[i], VisionConstants.CAMERA_POSITIONS[i]);
+                    visionSim.addCamera(cameraSims[i].photonCameraSim, VisionConstants.CAMERA_POSITIONS[i]);
                 }
 
+            } else {
+                // Create as many camera instances as you have in the array cameraNames
+                for (int i = 0; i < cameraNames.length; i++) {
+                    cameras[i] = new Camera(cameraNames[i], VisionConstants.CAMERA_POSITIONS[i]);
+                }
             }
         }
 

@@ -7,7 +7,9 @@ import com.pathplanner.lib.util.ReplanningConfig;
 import com.revrobotics.CANSparkBase.IdleMode;
 
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -178,25 +180,13 @@ public final class RobotConstants {
                 RobotConstants.DrivetrainConstants.DRIVE_BASE_RADIUS_METERS, // Drive base radius in meters.
                                                                              // Distance from robot center
                                                                              // to furthest module.
-                new ReplanningConfig(false, false) // Default path replanning config. See the API for the options here
+                new ReplanningConfig(false, true) // Default path replanning config. See the API for the options here
         );
-
-    }
-
-    public static final class PathFindingOnFlyConstants {
-        public static final double MAX_VELOCITY = 6.0; // Meters per second
-        public static final double MAX_ACCELERATION = 6.0; // Meters per second squared
-        public static final double MAX_ANGULAR_SPEED = 540.0; // Degrees per second
-        public static final double MAX_ANGULAR_ACCELERATION = 720.0; // Degrees per second squared
-    }
-
-    public static final class VisionConstants {
 
     }
 
     public static final class TeleopConstants {
         public static final double MAX_SPEED_PERCENT = 1; // ex: 0.4 -> 40%
-
     }
 
     public static final class PathPlannerConstants {
@@ -210,6 +200,59 @@ public final class RobotConstants {
                 PathPlannerConstants.kMaxAccelerationMetersPerSecondSquared,
                 DrivetrainConstants.MAX_ANGULAR_SPEED_RADIANS_PER_SECOND,
                 5 * Math.PI);
+
+        public static final double MAX_VELOCITY = 6.0; // Meters per second
+        public static final double MAX_ACCELERATION = 6.0; // Meters per second squared
+        public static final double MAX_ANGULAR_SPEED = 540.0; // Degrees per second
+        public static final double MAX_ANGULAR_ACCELERATION = 720.0; // Degrees per second squared
+    }
+
+    public static final class VisionConstants {
+        public static final Transform3d[] CAMERA_POSITIONS = {
+                new Transform3d(
+                        // Back Left
+                        new Translation3d(
+                                Units.inchesToMeters(-13.5), // forward+
+                                Units.inchesToMeters(12.75), // left+
+                                Units.inchesToMeters(9)), // up+
+                        new Rotation3d(
+                                Units.degreesToRadians(0),
+                                Units.degreesToRadians(-40), // Note, these are all counter clockwise so to face up we
+                                                             // need
+                                // -40 ;)
+                                Units.degreesToRadians(180 - 15))),
+                // Back Right
+                new Transform3d(
+                        new Translation3d(
+                                Units.inchesToMeters(-13.5), // forward+
+                                Units.inchesToMeters(-12.75), // left+
+                                Units.inchesToMeters(9)), // up+
+                        new Rotation3d(
+                                Units.degreesToRadians(0),
+                                Units.degreesToRadians(-40), // Note, these are all counter clockwise so to face up we
+                                                             // need -40 ;)
+                                Units.degreesToRadians(180 + 15))),
+                // Front Left
+                new Transform3d(
+                        new Translation3d(
+                                Units.inchesToMeters(13.5), // forward+
+                                Units.inchesToMeters(12.75), // left+
+                                Units.inchesToMeters(9)), // up+
+                        new Rotation3d(
+                                Units.degreesToRadians(0),
+                                Units.degreesToRadians(-40), // Note, these are all counter clockwise so to face up we
+                                                             // need -40 ;)
+                                Units.degreesToRadians(-15))),
+                // Front Right
+                new Transform3d(new Translation3d(
+                        Units.inchesToMeters(13.5), // forward+
+                        Units.inchesToMeters(-12.75), // left+
+                        Units.inchesToMeters(9)), // up+
+                        new Rotation3d(
+                                Units.degreesToRadians(0),
+                                Units.degreesToRadians(-40), // Note, these are all counter clockwise so to face up we
+                                                             // need -40 ;)
+                                Units.degreesToRadians(15))) };
     }
 
     public static final class SubsystemEnabledConstants {
