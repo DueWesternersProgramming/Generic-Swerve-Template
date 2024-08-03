@@ -14,11 +14,12 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.RobotSystemsCheckCommand;
-import frc.robot.commands.drive.PathFindToPose;
 import frc.robot.commands.drive.RunAtVelocity;
 import frc.robot.commands.drive.TeleopDriveCommand;
+import frc.robot.commands.drive.autoalign.AlignWithPose;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.subsystems.example.ExampleSubsystem;
 import frc.robot.subsystems.vision.VisionSubsystem;
@@ -58,14 +59,16 @@ public class RobotContainer {
     private void createNamedCommands() {
         // Add commands here to be able to execute in auto through pathplanner
 
-        NamedCommands.registerCommand("Example", new RunAtVelocity(driveSubsystem, 0, 0, 0));
+        NamedCommands.registerCommand("Example", new RunCommand(() -> {
+            System.out.println("Running...");
+        }));
     }
 
     private void configureButtonBindings() {
         new JoystickButton(driveJoystick, 3).whileTrue((driveSubsystem.xCommand())); // Needs to be while true so the
                                                                                      // command ends
         new JoystickButton(driveJoystick, 1)
-                .whileTrue(PathFindToPose.alignWithSpeakerCommand());
+                .whileTrue(AlignWithPose.alignWithSpeakerCommand(driveSubsystem));
 
         // Above = DriveJoystick, Below = OperatorJoystick
 
@@ -89,5 +92,6 @@ public class RobotContainer {
 
     public final class UserPolicy {
         public static boolean xLocked = false;
+        public static boolean isManualControlled = true;
     }
 }

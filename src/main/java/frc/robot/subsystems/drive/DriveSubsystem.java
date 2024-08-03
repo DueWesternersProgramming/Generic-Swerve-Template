@@ -5,6 +5,9 @@ import java.util.Optional;
 
 import com.kauailabs.navx.frc.AHRS;
 
+import edu.wpi.first.math.controller.HolonomicDriveController;
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -13,6 +16,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructArrayPublisher;
@@ -23,10 +27,13 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotConstants;
 import frc.robot.utils.CowboyUtils;
 import frc.robot.RobotConstants.DrivetrainConstants;
+import frc.robot.RobotConstants.PathPlannerConstants;
 import frc.robot.RobotConstants.SubsystemEnabledConstants;
 import frc.robot.RobotContainer.UserPolicy;
 import frc.robot.subsystems.drive.swerve.SwerveModule;
@@ -357,30 +364,134 @@ public class DriveSubsystem extends SubsystemBase {
             double ySpeedDelivered = ySpeedCommanded * DrivetrainConstants.MAX_SPEED_METERS_PER_SECOND;
             double rotDelivered = m_currentRotation * DrivetrainConstants.MAX_ANGULAR_SPEED_RADIANS_PER_SECOND;
 
+            ChassisSpeeds speeds = new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered);
+
             Rotation2d rotation = Rotation2d.fromDegrees(
                     getGyroAngle()
                             + (CowboyUtils.isRedAlliance() ? 180 : 0));
+
             var swerveModuleStates = DrivetrainConstants.DRIVE_KINEMATICS.toSwerveModuleStates(
                     fieldRelative
-                            ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered,
-                                    rotation)
-                            : new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered));
+                            ? ChassisSpeeds.fromFieldRelativeSpeeds(speeds, rotation)
+                            : speeds);
 
             SwerveDriveKinematics.desaturateWheelSpeeds(
                     swerveModuleStates, DrivetrainConstants.MAX_SPEED_METERS_PER_SECOND);
-
-            if (RobotBase.isReal()) {
-                swerveModules[0].setDesiredState(swerveModuleStates[0]);
-                swerveModules[1].setDesiredState(swerveModuleStates[1]);
-                swerveModules[2].setDesiredState(swerveModuleStates[2]);
-                swerveModules[3].setDesiredState(swerveModuleStates[3]);
-            } else {
-                swerveModuleSims[0].setDesiredState(swerveModuleStates[0]);
-                swerveModuleSims[1].setDesiredState(swerveModuleStates[1]);
-                swerveModuleSims[2].setDesiredState(swerveModuleStates[2]);
-                swerveModuleSims[3].setDesiredState(swerveModuleStates[3]);
+            System.out.println("IM VERY BAD");
+            if (UserPolicy.isManualControlled) {
+                if (RobotBase.isReal()) {
+                    swerveModules[0].setDesiredState(swerveModuleStates[0]);
+                    swerveModules[1].setDesiredState(swerveModuleStates[1]);
+                    swerveModules[2].setDesiredState(swerveModuleStates[2]);
+                    swerveModules[3].setDesiredState(swerveModuleStates[3]);
+                } else {
+                    swerveModuleSims[0].setDesiredState(swerveModuleStates[0]);
+                    swerveModuleSims[1].setDesiredState(swerveModuleStates[1]);
+                    swerveModuleSims[2].setDesiredState(swerveModuleStates[2]);
+                    swerveModuleSims[3].setDesiredState(swerveModuleStates[3]);
+                }
             }
         }
+    }
+
+    public void runChassisSpeeds(ChassisSpeeds speeds, Boolean fieldRelative) {
+        Rotation2d rotation = Rotation2d.fromDegrees(
+                getGyroAngle()
+                        + (CowboyUtils.isRedAlliance() ? 180 : 0));
+
+        var swerveModuleStates = DrivetrainConstants.DRIVE_KINEMATICS.toSwerveModuleStates(
+                fieldRelative
+                        ? ChassisSpeeds.fromFieldRelativeSpeeds(speeds, rotation)
+                        : speeds);
+
+        SwerveDriveKinematics.desaturateWheelSpeeds(
+                swerveModuleStates, DrivetrainConstants.MAX_SPEED_METERS_PER_SECOND);
+
+        if (RobotBase.isReal()) {
+            swerveModules[0].setDesiredState(swerveModuleStates[0]);
+            swerveModules[1].setDesiredState(swerveModuleStates[1]);
+            swerveModules[2].setDesiredState(swerveModuleStates[2]);
+            swerveModules[3].setDesiredState(swerveModuleStates[3]);
+        } else {
+            swerveModuleSims[0].setDesiredState(swerveModuleStates[0]);
+            swerveModuleSims[1].setDesiredState(swerveModuleStates[1]);
+            swerveModuleSims[2].setDesiredState(swerveModuleStates[2]);
+            swerveModuleSims[3].setDesiredState(swerveModuleStates[3]);
+        }
+    }
+
+    public ChassisSpeeds getTheoreticalSpeeds(double xSpeed, double ySpeed, double rot, boolean fieldRelative,
+            boolean rateLimit) {
+        if (SubsystemEnabledConstants.DRIVE_SUBSYSTEM_ENABLED) {
+            double xSpeedCommanded;
+            double ySpeedCommanded;
+
+            if (rateLimit) {
+                // Convert XY to polar for rate limiting
+                double inputTranslationDir = Math.atan2(ySpeed, xSpeed);
+                double inputTranslationMag = Math.sqrt(Math.pow(xSpeed, 2) + Math.pow(ySpeed, 2));
+
+                // Calculate the direction slew rate based on an estimate of the lateral
+                // acceleration
+                double directionSlewRate;
+
+                if (m_currentTranslationMag != 0.0) {
+                    directionSlewRate = Math.abs(DrivetrainConstants.DIRECTION_SLEW_RATE / m_currentTranslationMag);
+                } else {
+                    directionSlewRate = 500.0; // some high number that means the slew rate is effectively instantaneous
+                }
+
+                double currentTime = WPIUtilJNI.now() * 1e-6;
+                double elapsedTime = currentTime - m_prevTime;
+                double angleDif = SwerveUtils.angleDifference(inputTranslationDir, m_currentTranslationDir);
+
+                if (angleDif < 0.45 * Math.PI) {
+                    m_currentTranslationDir = SwerveUtils.stepTowardsCircular(m_currentTranslationDir,
+                            inputTranslationDir,
+                            directionSlewRate * elapsedTime);
+                    m_currentTranslationMag = m_magLimiter.calculate(inputTranslationMag);
+                } else if (angleDif > 0.85 * Math.PI) {
+                    if (m_currentTranslationMag > 1e-4) {
+                        m_currentTranslationMag = m_magLimiter.calculate(0.0);
+                    } else {
+                        m_currentTranslationDir = SwerveUtils.wrapAngle(m_currentTranslationDir + Math.PI);
+                        m_currentTranslationMag = m_magLimiter.calculate(inputTranslationMag);
+                    }
+                } else {
+                    m_currentTranslationDir = SwerveUtils.stepTowardsCircular(m_currentTranslationDir,
+                            inputTranslationDir,
+                            directionSlewRate * elapsedTime);
+                    m_currentTranslationMag = m_magLimiter.calculate(0.0);
+                }
+
+                m_prevTime = currentTime;
+
+                xSpeedCommanded = m_currentTranslationMag * Math.cos(m_currentTranslationDir);
+                ySpeedCommanded = m_currentTranslationMag * Math.sin(m_currentTranslationDir);
+                m_currentRotation = m_rotLimiter.calculate(rot);
+
+            } else {
+                xSpeedCommanded = xSpeed;
+                ySpeedCommanded = ySpeed;
+                m_currentRotation = rot;
+            }
+
+            // Convert the commanded speeds into the correct units for the drivetrain
+            double xSpeedDelivered = xSpeedCommanded * DrivetrainConstants.MAX_SPEED_METERS_PER_SECOND;
+            double ySpeedDelivered = ySpeedCommanded * DrivetrainConstants.MAX_SPEED_METERS_PER_SECOND;
+            double rotDelivered = m_currentRotation * DrivetrainConstants.MAX_ANGULAR_SPEED_RADIANS_PER_SECOND;
+
+            Rotation2d rotation = Rotation2d.fromDegrees(
+                    getGyroAngle()
+                            + (CowboyUtils.isRedAlliance() ? 180 : 0));
+
+            return !fieldRelative
+                    ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered,
+                            rotation)
+                    : new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered);
+
+        }
+        return new ChassisSpeeds();
     }
 
     /**
@@ -485,7 +596,7 @@ public class DriveSubsystem extends SubsystemBase {
         return SubsystemEnabledConstants.DRIVE_SUBSYSTEM_ENABLED ? Optional.of(swerveModules[3]) : Optional.empty();
     }
 
-    private void pathFollowDrive(ChassisSpeeds speeds) {
+    public void pathFollowDrive(ChassisSpeeds speeds) {
         SwerveModuleState[] swerveModuleStates = DrivetrainConstants.DRIVE_KINEMATICS.toSwerveModuleStates(speeds);
         setModuleStates(swerveModuleStates);
     }
