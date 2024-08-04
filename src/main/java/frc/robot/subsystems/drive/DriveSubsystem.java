@@ -377,7 +377,6 @@ public class DriveSubsystem extends SubsystemBase {
 
             SwerveDriveKinematics.desaturateWheelSpeeds(
                     swerveModuleStates, DrivetrainConstants.MAX_SPEED_METERS_PER_SECOND);
-            System.out.println("IM VERY BAD");
             if (UserPolicy.isManualControlled) {
                 if (RobotBase.isReal()) {
                     swerveModules[0].setDesiredState(swerveModuleStates[0]);
