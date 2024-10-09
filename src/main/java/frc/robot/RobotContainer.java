@@ -17,9 +17,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.RobotSystemsCheckCommand;
-import frc.robot.commands.drive.RunAtVelocity;
 import frc.robot.commands.drive.TeleopDriveCommand;
-import frc.robot.commands.drive.autoalign.AlignWithPose;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.subsystems.example.ExampleSubsystem;
 import frc.robot.subsystems.vision.VisionSubsystem;
@@ -67,8 +65,6 @@ public class RobotContainer {
     private void configureButtonBindings() {
         new JoystickButton(driveJoystick, 3).whileTrue((driveSubsystem.xCommand())); // Needs to be while true so the
                                                                                      // command ends
-        new JoystickButton(driveJoystick, 1)
-                .whileTrue(AlignWithPose.alignWithSpeakerCommand(driveSubsystem));
 
         new JoystickButton(driveJoystick, 1)
                 .whileTrue(driveSubsystem.gyroReset());

@@ -1,9 +1,10 @@
 package frc.robot;
 
+import com.pathplanner.lib.config.PIDConstants;
+import com.pathplanner.lib.config.RobotConfig;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.path.PathConstraints;
-import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
-import com.pathplanner.lib.util.PIDConstants;
-import com.pathplanner.lib.util.ReplanningConfig;
+
 import com.revrobotics.CANSparkBase.IdleMode;
 
 import edu.wpi.first.math.geometry.Rotation3d;
@@ -178,23 +179,6 @@ public final class RobotConstants {
 
                 public static final double FIELD_LENGTH_INCHES = 54 * 12 + 1; // 54ft 1in
                 public static final double FIELD_WIDTH_INCHES = 26 * 12 + 7; // 26ft 7in
-
-                public static final HolonomicPathFollowerConfig HOLONOMIC_PATH_FOLLOWER_CONFIG = new HolonomicPathFollowerConfig(
-                                new PIDConstants(AutonomousConstants.X_CONTROLLER_P, AutonomousConstants.X_CONTROLLER_I,
-                                                AutonomousConstants.X_CONTROLLER_D), // Translation PID constants
-                                new PIDConstants(AutonomousConstants.THETA_CONTROLLER_P,
-                                                AutonomousConstants.THETA_CONTROLLER_I,
-                                                AutonomousConstants.THETA_CONTROLLER_D), // Rotation
-                                RobotConstants.DrivetrainConstants.MAX_SPEED_METERS_PER_SECOND, // Max module speed, in
-                                                                                                // m/s
-                                RobotConstants.DrivetrainConstants.DRIVE_BASE_RADIUS_METERS, // Drive base radius in
-                                                                                             // meters.
-                                                                                             // Distance from robot
-                                                                                             // center
-                                                                                             // to furthest module.
-                                new ReplanningConfig(false, true) // Default path replanning config. See the API for the
-                                                                  // options here
-                );
 
         }
 

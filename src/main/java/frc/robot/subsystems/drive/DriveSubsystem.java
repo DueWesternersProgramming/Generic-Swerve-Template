@@ -21,6 +21,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.util.WPIUtilJNI;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.SPI.Port;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -42,6 +43,10 @@ import frc.robot.subsystems.vision.VisionSubsystem;
 import frc.robot.RobotConstants.AutonomousConstants;
 import frc.robot.utils.SwerveUtils;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.config.PIDConstants;
+import com.pathplanner.lib.config.RobotConfig;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+
 import edu.wpi.first.wpilibj.Timer;
 
 /**
@@ -67,6 +72,8 @@ public class DriveSubsystem extends SubsystemBase {
 
     private double fakeGyro = 0;
     Field2d field = new Field2d();
+
+    RobotConfig config;
 
     // temp:
     StructArrayPublisher<SwerveModuleState> publisher = NetworkTableInstance.getDefault()
@@ -133,17 +140,45 @@ public class DriveSubsystem extends SubsystemBase {
             }
         }
 
-        AutoBuilder.configureHolonomic(
-                m_odometry::getEstimatedPosition, // Robot pose supplier
-                this::resetOdometry, // Method to reset odometry (will be called if your auto has a starting pose)
-                this::getChassisSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-                this::pathFollowDrive,
-                AutonomousConstants.HOLONOMIC_PATH_FOLLOWER_CONFIG,
-                () -> {
-                    return AutonomousConstants.FLIP_PATHPLANNER_AUTOS;
+        try {
+            config = RobotConfig.fromGUISettings();
+        } catch (Exception e) {
+            // Handle exception as needed
+            e.printStackTrace();
+        }
+
+        AutoBuilder.configure(m_odometry::getEstimatedPosition, this::resetOdometry, this::getChassisSpeeds,
+                (speeds) -> pathFollowDrive(speeds), new PPHolonomicDriveController(
+                        new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
+                        new PIDConstants(5.0, 0.0, 0.0) // Rotation PID constants
+                ),
+
+                config, () -> {
+                    // Boolean supplier that controls when the path will be mirrored for the red
+                    // alliance
+                    // This will flip the path being followed to the red side of the field.
+                    // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
+
+                    var alliance = DriverStation.getAlliance();
+                    if (alliance.isPresent()) {
+                        return alliance.get() == DriverStation.Alliance.Red;
+                    }
+                    return false;
                 },
-                this // Reference to this subsystem to set requirements
-        );
+                this);
+
+        // AutoBuilder.configureHolonomic(
+        // m_odometry::getEstimatedPosition, // Robot pose supplier
+        // this::resetOdometry, // Method to reset odometry (will be called if your auto
+        // has a starting pose)
+        // this::getChassisSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
+        // this::pathFollowDrive,
+        // AutonomousConstants.HOLONOMIC_PATH_FOLLOWER_CONFIG,
+        // () -> {
+        // return AutonomousConstants.FLIP_PATHPLANNER_AUTOS;
+        // },
+        // this // Reference to this subsystem to set requirements
+        // );
     }
 
     private double getGyroAngle() {
