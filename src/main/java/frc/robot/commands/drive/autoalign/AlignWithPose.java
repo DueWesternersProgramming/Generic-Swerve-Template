@@ -29,12 +29,19 @@ public class AlignWithPose {
         HolonomicDriveController holonomicDriveController = new HolonomicDriveController(
                 new PIDController(3, 0, 0),
                 new PIDController(3, 0, 0), new ProfiledPIDController(3, 0, 0, new Constraints(3, 3)));
+
+                
         holonomicDriveController.setTolerance(new Pose2d(0.1, 0.1, new Rotation2d(10)));
         Command roughAlignmentCommand = AutoBuilder.pathfindToPose(
                 target,
                 PathPlannerConstants.DEFAULT_PATH_CONSTRAINTS,
                 0.0,
                 0.5);
+
+
+
+
+
         Command fineAlignmentCommand = new FunctionalCommand(
                 () -> {
                     UserPolicy.isManualControlled = false;
