@@ -70,6 +70,9 @@ public class RobotContainer {
         new JoystickButton(driveJoystick, 1)
                 .whileTrue(AlignWithPose.alignWithSpeakerCommand(driveSubsystem));
 
+        new JoystickButton(driveJoystick, 1)
+                .whileTrue(driveSubsystem.gyroReset());
+
         // Above = DriveJoystick, Below = OperatorJoystick
 
     }
