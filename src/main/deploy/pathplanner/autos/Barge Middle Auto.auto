@@ -1,0 +1,169 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "Score L3"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "1 BargeMiddleToReef4R"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.5
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "CoralOut"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.5
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "StopClaw"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "GrabLowAlgae"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AlgaeIn"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "2 Reef4RToReef4Algae"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.25
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "StopClaw"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ProcessorHome"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "3 Reef4AlgaeToProcessor"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.25
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AlgaeOut"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.25
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "StopClaw"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "HumanPlayer"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "4 ProcessorToHp2"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "CoralIn"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 1.0
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "StopClaw"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Score L3"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "5 HP2ToReef4L"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.25
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "CoralOut"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}

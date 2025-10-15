@@ -22,11 +22,16 @@ public class RobotSystemsCheckCommand extends SequentialCommandGroup {
                 new WaitCommand(1),
                 new RunAtVelocity(drivesubsystem, -0.5, 0, 0),
                 new WaitCommand(1),
+
                 new RunAtVelocity(drivesubsystem, 0, 0, 0.5),
                 new WaitCommand(1),
                 new RunAtVelocity(drivesubsystem, 0, 0, -0.5),
                 new WaitCommand(1),
+
+                new WaitCommand(2),
+
                 new RunAtVelocity(drivesubsystem, 0, 0, 0),
+
                 new PrintCommand("Testing Complete!"));
     }
 }

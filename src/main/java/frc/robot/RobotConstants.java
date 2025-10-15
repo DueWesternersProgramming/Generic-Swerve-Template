@@ -1,26 +1,53 @@
 package frc.robot;
 
+import java.util.List;
+import java.util.Optional;
+
+import org.photonvision.simulation.VisionSystemSim;
+
+import com.google.flatbuffers.Constants;
 import com.pathplanner.lib.path.PathConstraints;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
-
+import edu.wpi.first.wpilibj.RobotBase;
+import frc.robot.subsystems.vision.SimCameraConfig;
+import frc.robot.utils.CowboyUtils.RobotModes;
 
 public final class RobotConstants {
+
+        public static final class SimMode {
+                public enum SimModes {
+                        REGULAR,
+                        REPLAY,
+                }
+
+                public static final SimModes SIM_MODE = SimModes.REGULAR;
+        }
+
         public static final class DrivetrainConstants {
                 public static final double FRONT_LEFT_VIRTUAL_OFFSET_RADIANS = 0;
                 public static final double FRONT_RIGHT_VIRTUAL_OFFSET_RADIANS = 0; // -We do not apply an offset to the
                                                                                    // CANcoder
                                                                                    // angle, we just zero the encoders
                                                                                    // with the
-                                                                                   // wheels forward
-                                                                                   // -In radians
+                                                                                   // wheels forward with bolt side
+                                                                                   // facing
+                                                                                   // LEFT!!!
+                                                                                   // -In radians not degrees
                 public static final double REAR_LEFT_VIRTUAL_OFFSET_RADIANS = 0;
                 public static final double REAR_RIGHT_VIRTUAL_OFFSET_RADIANS = 0;
 
@@ -29,25 +56,29 @@ public final class RobotConstants {
                 public static final double MAX_SPEED_METERS_PER_SECOND = 6.0; // 4.42; //4.8;
                 public static final double MAX_ANGULAR_SPEED_RADIANS_PER_SECOND = 2 * Math.PI; // radians per second
 
-                public static final double DIRECTION_SLEW_RATE = 25;// radians per second
-                public static final double MAGNITUDE_SLEW_RATE = 25;// percent per second (1 = 100%)
-                public static final double ROTATIONAL_SLEW_RATE = 10;// percent per second (1 = 100%)
+                public static final double DIRECTION_SLEW_RATE = 25;
+                public static final double MAGNITUDE_SLEW_RATE = 25; // Responsiveness, or the "jerk" of the drivebase
+                public static final double ROTATIONAL_SLEW_RATE = 10;
 
                 // Chassis configuration
 
-                public static final double DRIVE_BASE_RADIUS_METERS = 0.52705; // measurement from center point of robot
-                                                                               // to the
-                                                                               // center of one of the wheels. (use the
-                                                                               // CAD)
+                public static final double DRIVE_BASE_RADIUS_METERS = Units.inchesToMeters(17.5); // measurement from
+                                                                                                  // center point of
+                                                                                                  // robot
+                // to the
+                // center of one of the wheels. (use the
+                // CAD)
 
-                public static final double LEFT_RIGHT_DISTANCE_METERS = Units.inchesToMeters(25); // Distance between
-                                                                                                  // centers of
-                                                                                                  // right
+                public static final double LEFT_RIGHT_DISTANCE_METERS = Units.inchesToMeters(24.750000); // Distance
+                                                                                                         // between
+                                                                                                         // centers of
+                                                                                                         // right
                 // and left wheels on robot
 
-                public static final double FRONT_BACK_DISTANCE_METERS = Units.inchesToMeters(25);// Distance between
-                                                                                                 // front and
-                                                                                                 // back
+                public static final double FRONT_BACK_DISTANCE_METERS = Units.inchesToMeters(24.750000);// Distance
+                                                                                                        // between
+                                                                                                        // front and
+                                                                                                        // back
                 // wheels on robot
 
                 public static final SwerveDriveKinematics DRIVE_KINEMATICS = new SwerveDriveKinematics(
@@ -74,9 +105,10 @@ public final class RobotConstants {
 
                 public static final double FREE_SPEED_RPM = 5676;
 
-                public static final int DRIVING_MOTOR_PINION_TEETH = 14;
+                public static final int DRIVING_MOTOR_PINION_TEETH = 14; // 14 for MK4i, 16 for MK4C
 
-                public static final boolean TURNING_ENCODER_INVERTED = true;
+                public static final boolean TURNING_ENCODER_INVERTED = false;
+                // Uninverted for MK4C (comment out) but inverted for MK4i
 
                 public static final double DRIVING_MOTOR_FREE_SPEED_RPS = FREE_SPEED_RPM / 60;
                 public static final double WHEEL_DIAMETER_METERS = 0.1016;
@@ -91,9 +123,11 @@ public final class RobotConstants {
                 public static final double DRIVING_ENCODER_VELOCITY_FACTOR_METERS_PER_SECOND_PER_RPM = ((WHEEL_DIAMETER_METERS
                                 * Math.PI) / DRIVING_MOTOR_REDUCTION) / 60.0; // meters per second, per RPM
 
-                public static final double TURNING_MOTOR_REDUCTION = 150.0 / 7.0; // Ratio between internal relative
-                                                                                  // encoder and
-                                                                                  // the absolute encoder
+                public static final double TURNING_MOTOR_REDUCTION = 150 / 7; // Ratio between internal relative
+                                                                              // encoder and
+                                                                              // the absolute encoder. 12.8 for MK4C,
+                                                                              // 150/7
+                                                                              // for MK4i
 
                 public static final double TURNING_ENCODER_POSITION_FACTOR_RADIANS_PER_ROTATION = (2 * Math.PI)
                                 / TURNING_MOTOR_REDUCTION; // radians, per rotation
@@ -139,28 +173,42 @@ public final class RobotConstants {
                         public static final int FRONT_RIGHT_TURNING = 10;
                         public static final int REAR_RIGHT_TURNING = 12;
 
-                        public static final int FRONT_LEFT_CANCODER = 1;
-                        public static final int FRONT_RIGHT_CANCODER = 2;
-                        public static final int REAR_LEFT_CANCODER = 3;
-                        public static final int REAR_RIGHT_CANCODER = 4;
+                        public static final int FRONT_LEFT_STEERING = 1;
+                        public static final int FRONT_RIGHT_STEERING = 2;
+                        public static final int REAR_LEFT_STEERING = 3;
+                        public static final int REAR_RIGHT_STEERING = 4;
+
+                        public static final int ELEVATOR_MOTOR_1 = 13;
+                        public static final int ELEVATOR_MOTOR_2 = 14;
+
+                        public static final int WRIST_MOTOR = 15;
+
+                        public static final int CLAW_MOTOR_1 = 16;
+                        public static final int CLAW_MOTOR_2 = 17;
+
+                        public static final int PDH = 18;
 
                 }
 
                 public static class Controller {
                         public static final double JOYSTICK_AXIS_THRESHOLD = 0.2;
                         public static final int DRIVE_JOYSTICK = 0;
-                        public static final int PANEL = 1;
                         public static final int OPERATOR_JOYSTICK = 1;
 
                         // Joystick Axis
                         public static final int DRIVE_COMMAND_X_AXIS = 0;
                         public static final int DRIVE_COMMAND_Y_AXIS = 1;
-                        public static final int DRIVE_COMMAND_ROT_AXIS = 4;
+                        public static final int DRIVE_COMMAND_ROT_AXIS = 2; // 2 for the flight controller, 4 for
+                                                                            // xbox/gamepad
+
+                        // Manual control axis for operator
+                        public static final int ELEVATOR_MANUAL_CONTROL = 1;
+                        public static final int WRIST_MANUAL_CONTROL = 5;
                 }
         }
 
         public static final class AutonomousConstants {
-                public static final boolean FLIP_PATHPLANNER_AUTOS = false;
+                // public static final boolean FLIP_PATHPLANNER_AUTOS = false;
 
                 public static final double X_CONTROLLER_P = 3.5;
                 public static final double Y_CONTROLLER_P = 3.5;
@@ -184,16 +232,16 @@ public final class RobotConstants {
         }
 
         public static final class PathPlannerConstants {
-                public static final Alliance DEFAULT_ALLIANCE = Alliance.Blue;
+                // public static final Alliance DEFAULT_ALLIANCE = Alliance.Blue;
 
                 public static final double kMaxAngularAcceleration = 4 * Math.PI;
                 public static final double kMaxAccelerationMetersPerSecondSquared = 3.00;
 
                 public static final PathConstraints DEFAULT_PATH_CONSTRAINTS = new PathConstraints(
-                                DrivetrainConstants.MAX_SPEED_METERS_PER_SECOND,
-                                PathPlannerConstants.kMaxAccelerationMetersPerSecondSquared,
-                                DrivetrainConstants.MAX_ANGULAR_SPEED_RADIANS_PER_SECOND,
-                                5 * Math.PI);
+                                .3,
+                                .3,
+                                .2,
+                                2 * Math.PI);
 
                 public static final double MAX_VELOCITY = 6.0; // Meters per second
                 public static final double MAX_ACCELERATION = 6.0; // Meters per second squared
@@ -202,63 +250,146 @@ public final class RobotConstants {
         }
 
         public static final class VisionConstants {
+                public static enum VisionMode {
+                        APRIL_TAG_ONLY,
+                        QUEST_NAV_ONLY,
+                        HYBRID
+                }
+
+                public static final int[] REEF_IDS = { 6, 7, 8, 9, 10, 11, 17, 18, 19, 20, 21, 22 };
+
+                public static final record AprilTagCameraConfig(VisionSource source, SimCameraConfig simConfig) {
+                }
+
+                public record VisionSource(String name, Transform3d robotToCamera) {
+                }
+
+                public static final Optional<VisionSystemSim> aprilTagSim = RobotModes.currentMode == RobotModes.simMode
+                                ? Optional.of(new VisionSystemSim("AprilTagSim"))
+                                : Optional.empty();
+
+                // configure our camera objects here
+                public static final List<AprilTagCameraConfig> CAMERA_CONFIGS = List.of(
+                                // Front Left
+                                new AprilTagCameraConfig(
+                                                new VisionSource(
+                                                                "frontLeftCamera",
+                                                                new Transform3d(
+                                                                                new Translation3d(
+                                                                                                Units.inchesToMeters(
+                                                                                                                5.125), // forward+
+                                                                                                Units.inchesToMeters(
+                                                                                                                7.99), // left+
+                                                                                                Units.inchesToMeters(
+                                                                                                                13.725000)), // up+
+                                                                                new Rotation3d(
+                                                                                                // Counter clockwise
+                                                                                                // positive
+                                                                                                Units.degreesToRadians(
+                                                                                                                0),
+                                                                                                Units.degreesToRadians(
+                                                                                                                0),
+                                                                                                Units.degreesToRadians(
+                                                                                                                0)))),
+                                                SimCameraConfig.ARDUCAM_OV9281_55),
+                                // Front Right
+                                new AprilTagCameraConfig(
+                                                new VisionSource(
+                                                                "frontRightCamera",
+                                                                new Transform3d(
+                                                                                new Translation3d(
+                                                                                                Units.inchesToMeters(
+                                                                                                                5.077711), // forward+
+                                                                                                Units.inchesToMeters(
+                                                                                                                -8.006511), // left+
+                                                                                                Units.inchesToMeters(
+                                                                                                                24.964102)), // up+
+                                                                                new Rotation3d(
+                                                                                                Units.degreesToRadians(
+                                                                                                                0),
+                                                                                                Units.degreesToRadians(
+                                                                                                                -27.5),
+                                                                                                Units.degreesToRadians(
+                                                                                                                10)))),
+                                                SimCameraConfig.ARDUCAM_OV9281_55),
+                                // Back Right
+                                new AprilTagCameraConfig(
+                                                new VisionSource(
+                                                                "backLeftCamera", new Transform3d(
+                                                                                new Translation3d(
+                                                                                                Units.inchesToMeters(
+                                                                                                                -4.361060), // forward+
+                                                                                                Units.inchesToMeters(
+                                                                                                                9.375080), // left+
+                                                                                                Units.inchesToMeters(
+                                                                                                                24.57)), // up+
+                                                                                new Rotation3d(
+                                                                                                Units.degreesToRadians(
+                                                                                                                0),
+                                                                                                Units.degreesToRadians(
+                                                                                                                -5),
+                                                                                                Units.degreesToRadians(
+                                                                                                                180 + 5)))),
+                                                SimCameraConfig.ARDUCAM_OV9281_55));
+
                 public static final Transform3d[] CAMERA_POSITIONS = {
                                 new Transform3d(
-                                                // Back Left
+                                                // Front Left
                                                 new Translation3d(
-                                                                Units.inchesToMeters(-13.5), // forward+
-                                                                Units.inchesToMeters(12.75), // left+
-                                                                Units.inchesToMeters(9)), // up+
+                                                                Units.inchesToMeters(5.125), // forward+
+                                                                Units.inchesToMeters(7.99), // left+
+                                                                Units.inchesToMeters(13.725000)), // up+
                                                 new Rotation3d(
                                                                 Units.degreesToRadians(0),
-                                                                Units.degreesToRadians(-40), // Note, these are all
-                                                                                             // counter clockwise so to
-                                                                                             // face up we
-                                                                                             // need
-                                                                // -40 ;)
-                                                                Units.degreesToRadians(180 - 15))),
-                                // Back Right
-                                new Transform3d(
-                                                new Translation3d(
-                                                                Units.inchesToMeters(-13.5), // forward+
-                                                                Units.inchesToMeters(-12.75), // left+
-                                                                Units.inchesToMeters(9)), // up+
-                                                new Rotation3d(
-                                                                Units.degreesToRadians(0),
-                                                                Units.degreesToRadians(-40), // Note, these are all
-                                                                                             // counter clockwise so to
-                                                                                             // face up we
-                                                                                             // need -40 ;)
-                                                                Units.degreesToRadians(180 + 15))),
-                                // Front Left
-                                new Transform3d(
-                                                new Translation3d(
-                                                                Units.inchesToMeters(13.5), // forward+
-                                                                Units.inchesToMeters(12.75), // left+
-                                                                Units.inchesToMeters(9)), // up+
-                                                new Rotation3d(
-                                                                Units.degreesToRadians(0),
-                                                                Units.degreesToRadians(-40), // Note, these are all
-                                                                                             // counter clockwise so to
-                                                                                             // face up we
-                                                                                             // need -40 ;)
-                                                                Units.degreesToRadians(-15))),
+                                                                Units.degreesToRadians(0), // Note, these are all
+                                                                                           // counter clockwise
+                                                                                           // so to
+                                                                                           // face up we
+                                                                                           // need
+                                                                                           // - ;)
+                                                                Units.degreesToRadians(0))),
+
                                 // Front Right
-                                new Transform3d(new Translation3d(
-                                                Units.inchesToMeters(13.5), // forward+
-                                                Units.inchesToMeters(-12.75), // left+
-                                                Units.inchesToMeters(9)), // up+
+                                new Transform3d(
+                                                new Translation3d(
+                                                                Units.inchesToMeters(5.077711), // forward+
+                                                                Units.inchesToMeters(-8.006511), // left+
+                                                                Units.inchesToMeters(24.964102)), // up+
                                                 new Rotation3d(
                                                                 Units.degreesToRadians(0),
-                                                                Units.degreesToRadians(-40), // Note, these are all
-                                                                                             // counter clockwise so to
-                                                                                             // face up we
-                                                                                             // need -40 ;)
-                                                                Units.degreesToRadians(15))) };
+                                                                Units.degreesToRadians(-22.5), // Note, these are
+                                                                                               // all
+                                                                                               // counter clockwise
+                                                                                               // so to
+                                                                                               // face up we
+                                                                                               // need - ;)
+                                                                Units.degreesToRadians(0))),
+                                // Back Left
+                                new Transform3d(
+                                                new Translation3d(
+                                                                Units.inchesToMeters(-4.361060), // forward+
+                                                                Units.inchesToMeters(9.375080), // left+
+                                                                Units.inchesToMeters(24.57)), // up+
+                                                new Rotation3d(
+                                                                Units.degreesToRadians(0),
+                                                                Units.degreesToRadians(-5), // Note, these are all
+                                                                                            // counter clockwise so
+                                                                                            // to
+                                                                                            // face up we
+                                                                                            // need - ;)
+                                                                Units.degreesToRadians(180 + 5))) };
+        }
+
+        public static final class QuestNavConstants {
+                public static final Matrix<N3, N1> QUESTNAV_STD_DEVS = VecBuilder.fill(
+                                0.02, // Trust down to 2cm in X direction
+                                0.02, // Trust down to 2cm in Y direction
+                                0.035 // Trust down to 2 degrees rotational
+                );
         }
 
         public static final class SubsystemEnabledConstants {
                 public static final boolean DRIVE_SUBSYSTEM_ENABLED = true;
-                public static final boolean VISION_SUBSYSTEM_ENABLED = false;
+                public static final boolean VISION_SUBSYSTEM_ENABLED = true;
         }
 }

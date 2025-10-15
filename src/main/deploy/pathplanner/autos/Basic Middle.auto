@@ -1,0 +1,109 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "Score L3"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "1 BargeMiddleToReef4R"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.25
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "CoralOut"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.25
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "StopClaw"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Reef4RToBackup"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "GrabLowAlgae"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AlgaeIn"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 1.0
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Reef4BackupToAlgae"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.25
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Reef4AlgaeToBackup"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.25
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "StopClaw"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ProcessorHome"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}
